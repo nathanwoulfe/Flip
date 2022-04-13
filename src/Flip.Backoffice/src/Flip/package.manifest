@@ -1,0 +1,9 @@
+﻿{
+  "javascript": [
+    "~/App_Plugins/Flip/Backoffice/js/Flip.js"
+  ],
+  "css": [
+    "~/App_Plugins/Flip/Backoffice/css/styles.css"
+  ],
+  "bundleOptions": "None"
+} 

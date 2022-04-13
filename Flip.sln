@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flip", "src\Flip\Flip.csproj", "{855B911D-07AB-419F-9EBD-5CB8FBFF447E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flip.Backoffice", "src\Flip.Backoffice\Flip.Backoffice.csproj", "{7ED8F51B-2138-4D06-8AD1-74E3E34D333D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50BF495F-A3B2-4A1B-B0DD-218DA77962A1}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		Directory.Build.Props = Directory.Build.Props
+		localbuild.ps1 = localbuild.ps1
+		NuGet.config = NuGet.config
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flip.Umbraco9", "Flip.Umbraco9\Flip.Umbraco9.csproj", "{2F027E81-7A33-4368-BE7F-B26C1401494A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flip.Web", "src\Flip.Web\Flip.Web.csproj", "{08C3E2FE-7734-4F76-9FF3-A6AB029080F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flip.Umbraco8", "Flip.Umbraco8\Flip.Umbraco8.csproj", "{5DAA80AB-3F5B-4EF8-AA94-A0F365228E25}"
+	ProjectSection(ProjectDependencies) = postProject
+		{08C3E2FE-7734-4F76-9FF3-A6AB029080F7} = {08C3E2FE-7734-4F76-9FF3-A6AB029080F7}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{855B911D-07AB-419F-9EBD-5CB8FBFF447E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{855B911D-07AB-419F-9EBD-5CB8FBFF447E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{855B911D-07AB-419F-9EBD-5CB8FBFF447E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{855B911D-07AB-419F-9EBD-5CB8FBFF447E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED8F51B-2138-4D06-8AD1-74E3E34D333D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED8F51B-2138-4D06-8AD1-74E3E34D333D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED8F51B-2138-4D06-8AD1-74E3E34D333D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED8F51B-2138-4D06-8AD1-74E3E34D333D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F027E81-7A33-4368-BE7F-B26C1401494A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F027E81-7A33-4368-BE7F-B26C1401494A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F027E81-7A33-4368-BE7F-B26C1401494A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F027E81-7A33-4368-BE7F-B26C1401494A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08C3E2FE-7734-4F76-9FF3-A6AB029080F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08C3E2FE-7734-4F76-9FF3-A6AB029080F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08C3E2FE-7734-4F76-9FF3-A6AB029080F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08C3E2FE-7734-4F76-9FF3-A6AB029080F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DAA80AB-3F5B-4EF8-AA94-A0F365228E25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DAA80AB-3F5B-4EF8-AA94-A0F365228E25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DAA80AB-3F5B-4EF8-AA94-A0F365228E25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DAA80AB-3F5B-4EF8-AA94-A0F365228E25}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9473A1C7-43FB-4A64-A667-EE623593317A}
+	EndGlobalSection
+EndGlobal
