@@ -3,4 +3,10 @@
 	<area alias="flip">
 
 	</area>
+	<area alias="actions">
+		<key alias="flip">Change Document Type</key>
+	</area>
+	<area alias="actionDescriptions">
+		<key alias="flip">Allow access to change document type</key>
+	</area>
 </language>

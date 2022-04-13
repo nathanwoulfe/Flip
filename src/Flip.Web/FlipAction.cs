@@ -8,16 +8,16 @@ namespace Flip.Web
 {
     public class FlipAction : IAction
     {
-        public char Letter => 'F';
+        public char Letter => Constants.ActionLetter[0];
 
         public bool ShowInNotifier => true;
 
         public bool CanBePermissionAssigned => true;
 
-        public string Icon => "binoculars";
+        public string Icon => Constants.Icon;
 
-        public string Alias => "flip";
+        public string Alias => Constants.Alias;
 
-        public string Category => "structure";
+        public string Category => Constants.Category;
     }
 }

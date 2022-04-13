@@ -12,7 +12,7 @@ using IActionResult = System.Web.Http.IHttpActionResult;
 
 namespace Flip.Web.Controllers
 {
-    [PluginController("Flip")]
+    [PluginController(Constants.Name)]
     public class FlipController : UmbracoAuthorizedApiController
     {
         private readonly IFlipService _flipService;

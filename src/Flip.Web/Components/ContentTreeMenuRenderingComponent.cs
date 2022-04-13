@@ -1,6 +1,7 @@
 ﻿#if NETFRAMEWORK
 using Flip.Web.Executors;
 using Umbraco.Core.Composing;
+using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
 
 namespace Flip.Web.Components
@@ -26,7 +27,9 @@ namespace Flip.Web.Components
 
         private void ContentTreeController_MenuRendering(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            _contentTreeMenuRenderingExecutor.CheckAddFlipAction(sender.TreeAlias, int.Parse(e.NodeId));
+            if (!_contentTreeMenuRenderingExecutor.CheckAddFlipAction(sender.TreeAlias, e.NodeId, out MenuItem menuItem)) return;
+
+            e.Menu.Items.Insert(e.Menu.Items.Count - 1, menuItem);
         }
     }
 }
