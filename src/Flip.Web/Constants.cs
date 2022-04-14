@@ -5,7 +5,7 @@
         public const string Alias = "flip";
         public const string Name = "Flip";
         public const string Category = "structure";
-        public const string Icon = "binoculars";
+        public const string Icon = "axis-rotation-2";
 
         public const string ActionLetter = "F";
         public const string ActionName = "Change Document Type";

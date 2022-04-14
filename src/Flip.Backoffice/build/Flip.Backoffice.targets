@@ -1,0 +1,33 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <FlipContentFilesPath>$(MSBuildThisFileDirectory)..\Content\App_Plugins\Flip\**\*.*</FlipContentFilesPath>
+  </PropertyGroup>
+
+  <Target Name="CopyFlipPackageAssets" BeforeTargets="Build">
+    <ItemGroup>
+      <FlipContentFiles Include="$(FlipContentFilesPath)" />
+    </ItemGroup>
+
+    <Message Text="Copying Flip package files: $(FlipContentFilesPath) - @(FlipContentFiles->Count()) files" Importance="high" />
+    <Warning Text="No package files found in $(FlipContentFilesPath)" Condition="@(FlipContentFiles->Count()) == 0" />
+
+    <Copy
+          SourceFiles="@(FlipContentFiles)"
+          DestinationFiles="@(FlipContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Flip\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="ClearFlipPackageAssets" BeforeTargets="Clean">
+    <ItemGroup>
+      <FlipBackofficeDir Include="$(MSBuildProjectDirectory)\App_Plugins\Flip\Backoffice" />
+      <FlipLangDir Include="$(MSBuildProjectDirectory)\App_Plugins\Flip\Lang" />
+    </ItemGroup>
+    <Message Text="Clear old Flip data"  Importance="high" />
+    <RemoveDir Directories="@(FlipBackofficeDir)"  />
+    <RemoveDir Directories="@(FlipLangDir)"  />
+    <Delete Files="$(MSBuildProjectDirectory)\App_Plugins\Flip\package.manifest" />
+
+  </Target>
+
+</Project>

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    ".NETCoreApp,Version=v5.0": {
       "Microsoft.ICU.ICU4C.Runtime": {
         "type": "Direct",
         "requested": "[68.2.0.9, )",

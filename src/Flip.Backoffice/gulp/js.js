@@ -14,7 +14,7 @@ import tsify from 'tsify';
 import { paths, config } from './config';
 
 export function js() {
-    return _js(paths.js, `blip.js`);} 
+    return _js(paths.js, `flip.js`);} 
 
 
 

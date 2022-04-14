@@ -22,9 +22,12 @@ namespace Flip.Web
         {
             builder.Services
                 .AddSingleton<IFlipService, FlipService>()
-                .AddSingleton<IContentTreeMenuRenderingExecutor, ContentTreeMenuRenderingExecutor>();
+                .AddSingleton<ILinkGenerator, LinkGenerator>()
+                .AddSingleton<IContentTreeMenuRenderingExecutor, ContentTreeMenuRenderingExecutor>()
+                .AddSingleton<IServerVariablesParsingExecutor, ServerVariablesParsingExecutor>();
 
-            builder.AddNotificationHandler<MenuRenderingNotification, ContentTreeMenuRenderingHandler>();
+            builder.AddNotificationHandler<MenuRenderingNotification, ContentTreeMenuRenderingHandler>()
+                .AddNotificationHandler<ServerVariablesParsingNotification, ServerVariablesParsingHandler>();
         }
     }
 #else
@@ -34,9 +37,13 @@ namespace Flip.Web
         public void Compose(Composition composition)
         {
             composition.Register<IFlipService, FlipService>();
+            composition.Register<ILinkGenerator, LinkGenerator>();
             composition.Register<IContentTreeMenuRenderingExecutor, ContentTreeMenuRenderingExecutor>();
+            composition.Register<IServerVariablesParsingExecutor, ServerVariablesParsingExecutor>();
 
-            composition.Components().Append<ContentTreeMenuRenderingComponent>();
+            composition.Components()
+                .Append<ContentTreeMenuRenderingComponent>()
+                .Append<ServerVariablesParsingComponent>();
         }
     }
 #endif
