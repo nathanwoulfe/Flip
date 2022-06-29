@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 #if NETCOREAPP
 using Umbraco.Cms.Core.Actions;
+using Umbraco.Cms.Core.Models.Membership;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Trees;
@@ -10,6 +11,7 @@ using UmbConstants = Umbraco.Cms.Core.Constants;
 #else
 using Flip.Web.Security;
 using Umbraco.Core;
+using Umbraco.Core.Models.Membership;
 using Umbraco.Core.Services;
 using Umbraco.Web.Actions;
 using Umbraco.Web.Models.Trees;
@@ -41,18 +43,18 @@ namespace Flip.Web.Executors
         {
             if (treeAlias != UmbConstants.Trees.Content) return;
 
-            var currentUser = _backOfficeSecurityAccessor.BackOfficeSecurity.CurrentUser;
-            var showMenu = currentUser.Groups.Any(x => x.Alias.InvariantContains(UmbConstants.Security.AdminGroupAlias));
+            IUser currentUser = _backOfficeSecurityAccessor.BackOfficeSecurity.CurrentUser;
+            bool showMenu = false;
 
-            if (!showMenu && int.TryParse(nodeId, out int id))
+            if (int.TryParse(nodeId, out int id))
             {
-                var permissions = _userService.GetPermissions(currentUser, nodeId);
+                EntityPermission permissions = _userService.GetPermissions(currentUser, nodeId);
                 showMenu = permissions.AssignedPermissions?.Contains(Constants.ActionLetter) ?? false;
             }
 
             if (!showMenu) return;
 
-            var item = new MenuItem(Constants.Alias, Constants.ActionName)
+            MenuItem item = new MenuItem(Constants.Alias, Constants.ActionName)
             {
                 Icon = Constants.Icon,
                 SeparatorBefore = false,

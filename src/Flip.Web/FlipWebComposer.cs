@@ -9,6 +9,7 @@ using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
 #else
 using Flip.Web.Components;
+using Flip.Web.Security;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 #endif
@@ -40,6 +41,7 @@ namespace Flip.Web
             composition.Register<ILinkGenerator, LinkGenerator>();
             composition.Register<IContentTreeMenuRenderingExecutor, ContentTreeMenuRenderingExecutor>();
             composition.Register<IServerVariablesParsingExecutor, ServerVariablesParsingExecutor>();
+            composition.Register<IBackOfficeSecurityAccessor, BackOfficeSecurityAccessor>();
 
             composition.Components()
                 .Append<ContentTreeMenuRenderingComponent>()
