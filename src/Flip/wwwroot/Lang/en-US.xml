@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language alias="en_us" intName="English (US)" localName="English (US)" lcid="" culture="en-US">
+	<area alias="flip">
+		<key alias="propertyEditor">Property Editor</key>
+		<key alias="dataType">Data Type</key>
+		<key alias="newType">New Document Type</key>
+		<key alias="newTemplate">New template</key>
+		<key alias="currentType">Current Document Type</key>
+		<key alias="currentProperty">Current property</key>
+		<key alias="newProperty">New property</key>
+		<key alias="changeDocTypeInstruction">To change the document type for the selected content, first select from the list of valid types for this location.</key>
+		<key alias="noPermittedTypes">The document type cannot be changed, as there are no other types permitted for this location.</key>
+		<key alias="mapProperties">Map properties</key>
+		<key alias="mapType">Mapping type</key>
+		<key alias="mapPropertiesInstruction">Confirm and/or amend the mapping of properties from the current type to the new type, then click Save. Blank or unmapped properties will be set to empty.</key>
+		<key alias="mapTypeInstruction">Mapping by Data Type restricts mapping to properties using the exact Data Type (ie any property using the Textarea Data Type), 
+			mapping by Property Editor restricts mapping to properties using the same editor type (ie any property using the Umbraco.Textbox editor). 
+			Mapping by Data Type prevents config mismatches when mapping between properties using different instances of the same editor.</key>
+	</area>
+	<area alias="actions">
+		<key alias="flip">Change Document Type</key>
+	</area>
+	<area alias="actionDescriptions">
+		<key alias="flip">Allow access to change document type</key>
+	</area>
+</language>

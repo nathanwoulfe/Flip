@@ -49,12 +49,6 @@ Flip will play nice with Umbraco 8 and 9, and should be fine on Umbraco 10 (curr
 
 Install via Nuget: `Install-Package Flip.Umbraco`
 
-## Getting started
+## Credits
 
-Feel like poking the bear? Here's how:
-
- - Clone the repo
- - CD your way to /src/flip.backoffice
- - `gulp dev`
- - Run either the Flip.Umbraco8 or Flip.Umbraco9 test sites
- - Log in to either using `test@test.test` as both email and password
+Icon: flip by Joshua Weber from <a href="https://thenounproject.com/browse/icons/term/flip/" target="_blank" title="flip Icons">Noun Project</a>

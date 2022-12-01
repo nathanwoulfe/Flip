@@ -1,0 +1,104 @@
+<div ng-controller="Flip.Dialog.Controller as vm" class="flip-dialog">
+    <div class="umb-dialog-body">
+        <div class="umb-pane">
+            <umb-load-indicator ng-if="!vm.loaded"></umb-load-indicator>
+
+            <div ng-if="vm.loaded">
+                <dl class="mb3">
+                    <div class="flex">
+                        <dt><localize key="general_content">Content</localize>:</dt>
+                        <dd>{{ vm.node.nodeName }}</dd>
+                    </div>
+                    <div class="flex">
+                        <dt><localize key="flip_currentType">Current Document Type</localize>:</dt>
+                        <dd>{{ vm.node.contentTypeName }}</dd>
+                    </div>
+                </dl>
+
+                <small ng-if="vm.permittedTypes.length > 1">
+                    <localize key="flip_changeDocTypeInstruction">
+                        To change the document type for the selected content, first select from the list of valid types for this location.
+                    </localize>
+                </small>
+
+                <div class="alert alert-info" ng-if="!vm.permittedTypes.length">
+                    <localize key="flip_noPermittedTypes">
+                        The document type cannot be changed, as there are no other types permitted for this location.
+                    </localize>
+                </div>
+
+                <div ng-if="vm.permittedTypes.length" class="flex mt3 items-center">
+                    <strong class="d-block" style="width:160px;"><localize key="flip_newType">New Document Type</localize>:</strong>
+                    <select class="mb0"
+                            ng-model="vm.newType"
+                            ng-disabled="vm.permittedTypes.length === 1"
+                            ng-options="o as o.Name for o in vm.permittedTypes"
+                            ng-change="vm.getNewTypePropertyCollection(true)"></select>
+                </div>
+
+                <div ng-if="vm.newType" class="flex mt3 items-center">
+                    <strong class="d-block" style="width:160px;"><localize key="flip_newTemplate">New template</localize>:</strong>
+                    <select class="mb0"
+                            ng-model="vm.newTemplateId"
+                            ng-disabled="vm.newType.AllowedTemplates.length === 1"
+                            ng-options="t.Id as t.Name for t in vm.newType.AllowedTemplates"></select>
+                </div>
+
+                <div ng-if="vm.newType">
+
+                    <h5><localize key="flip_mapType"></localize></h5>
+                    <small><localize key="flip_mapTypeInstruction"></localize></small>
+
+                    <div class="mt3 flex">
+                        <umb-radiobutton text="Data Type"
+                                         value="DATATYPE"
+                                         model="vm.mapType"
+                                         name="mapType"></umb-radiobutton>
+
+                        <umb-radiobutton text="Property Editor"
+                                         class="ml2"
+                                         value="EDITOR"
+                                         model="vm.mapType"
+                                         name="mapType"></umb-radiobutton>
+                    </div>
+
+                    <h5><localize key="flip_mapProperties">Map properties</localize></h5>
+                    <small><localize key="flip_mapPropertiesInstruction"></localize></small>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><localize key="flip_currentProperty">Current property</localize></th>
+                                <th><localize key="flip_newProperty">New property</localize></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="p in vm.node.properties">
+                                <td>{{ p.label }}</td>
+                                <td>
+                                    <select class="mb0"
+                                            ng-model="p.newAlias"
+                                            ng-disabled="!vm.newProperties[vm.mapType === 'DATATYPE' ? p.dataTypeKey : p.editor]"
+                                            ng-options="o.alias as o.label for o in vm.newProperties[vm.mapType === 'DATATYPE' ? p.dataTypeKey : p.editor]"></select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="umb-dialog-footer btn-toolbar umb-btn-toolbar">
+        <umb-button type="button"
+                    button-style="link"
+                    label-key="general_close"
+                    action="vm.close()">
+        </umb-button>
+        <umb-button type="button"
+                    button-style="success"
+                    label-key="buttons_save"
+                    action="vm.save()">
+        </umb-button>
+    </div>
+</div>
