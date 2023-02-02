@@ -8,6 +8,7 @@
     <IncludeSymbols>false</IncludeSymbols>
     <StaticWebAssetBasePath>App_Plugins/Flip</StaticWebAssetBasePath>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
   
   <ItemGroup>
