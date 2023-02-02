@@ -8,10 +8,9 @@ public sealed class ContentTreeMenuRenderingHandler : INotificationHandler<MenuR
 {
     private readonly IContentTreeMenuRenderingExecutor _contentTreeMenuRenderingExecutor;
 
-    public ContentTreeMenuRenderingHandler(IContentTreeMenuRenderingExecutor contentTreeMenuRenderingExecutor) =>        
+    public ContentTreeMenuRenderingHandler(IContentTreeMenuRenderingExecutor contentTreeMenuRenderingExecutor) =>
         _contentTreeMenuRenderingExecutor = contentTreeMenuRenderingExecutor;
-    
 
-    public void Handle(MenuRenderingNotification notification) =>        
-        _contentTreeMenuRenderingExecutor.CheckAddFlipAction(notification.TreeAlias, notification.NodeId, notification.Menu);        
+    public void Handle(MenuRenderingNotification notification) =>
+        _contentTreeMenuRenderingExecutor.CheckAddFlipAction(notification.TreeAlias, notification.NodeId, notification.Menu);
 }

@@ -1,6 +1,6 @@
 {
   "name": "flip",
-  "version": "1.0.0",
+  "version": "10.0.0",
   "url": "http://our.umbraco.org/projects/developer-tools/my-awesome-package",
   "description": "Content type flipper for Umbraco",
   "license": "MIT",
@@ -12,7 +12,11 @@
   },
   "scripts": {
     "dev": "gulp dev",
-    "prod": "gulp prod --prod"
+    "build": "gulp build"
+  },
+  "engines": {
+    "node": ">=16.17",
+    "npm": ">=8.15"
   },
   "types": "types.d.ts",
   "devDependencies": {

@@ -1,12 +1,11 @@
-﻿using Umbraco.Cms.Core.Actions;
+using Umbraco.Cms.Core.Actions;
 using Umbraco.Cms.Core.Models.Membership;
+using Umbraco.Cms.Core.Models.Trees;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Trees;
-using Umbraco.Cms.Core.Models.Trees;
 using Umbraco.Extensions;
 using UmbConstants = Umbraco.Cms.Core.Constants;
-
 
 namespace Flip.Executors;
 
@@ -30,11 +29,17 @@ internal sealed class ContentTreeMenuRenderingExecutor : IContentTreeMenuRenderi
 
     public void CheckAddFlipAction(string treeAlias, string nodeId, MenuItemCollection menu)
     {
-        if (treeAlias != UmbConstants.Trees.Content) return;
+        if (treeAlias != UmbConstants.Trees.Content)
+        {
+            return;
+        }
 
         IUser? currentUser = _backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser;
 
-        if (currentUser is null) return;
+        if (currentUser is null)
+        {
+            return;
+        }
 
         bool showMenu = false;
 
@@ -44,20 +49,30 @@ internal sealed class ContentTreeMenuRenderingExecutor : IContentTreeMenuRenderi
             showMenu = permissions?.AssignedPermissions?.Contains(Constants.ActionLetter) ?? false;
         }
 
-        if (!showMenu) return;
+        if (!showMenu)
+        {
+            return;
+        }
 
         MenuItem item = new(Constants.Alias, Constants.ActionName)
         {
             Icon = Constants.Icon,
             SeparatorBefore = false,
-            OpensDialog = true
+            OpensDialog = true,
         };
 
         item.AdditionalData.Add("actionView", Constants.ActionView);
 
         // add the item after copy, or after move, or second last if neither exist
-        if (HasAction(new ActionCopy().Alias)) return;
-        if (HasAction(new ActionMove().Alias)) return;
+        if (HasAction(new ActionCopy().Alias))
+        {
+            return;
+        }
+
+        if (HasAction(new ActionMove().Alias))
+        {
+            return;
+        }
 
         item.SeparatorBefore = true;
         menu.Items.Insert(menu.Items.Count - 1, item);

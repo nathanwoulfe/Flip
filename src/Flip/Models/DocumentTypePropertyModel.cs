@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Umbraco.Cms.Core.PropertyEditors;
+using Newtonsoft.Json;
 
 namespace Flip.Models;
 
@@ -15,7 +14,7 @@ public sealed class DocumentTypePropertyModel
     public object? Value { get; set; }
 
     [JsonProperty("values")]
-    public IEnumerable<(string? Culture, object? Value)>? Values {get; set;} 
+    public IEnumerable<(string? Culture, object? Value)>? Values { get; set; }
 
     [JsonProperty("newAlias")]
     public string? NewAlias { get; set; }

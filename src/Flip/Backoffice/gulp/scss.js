@@ -8,13 +8,12 @@ import gulpif from 'gulp-if';
 import { paths, config } from './config';
 
 export function scss() {
-    const cssDest = 'Backoffice/';
+  const cssDest = '/Backoffice/';
 
-    return gulp.src(paths.scss)
-        .pipe(sass())
-        .pipe(concat(`flip.min.css`))
-        .pipe(gulpif(config.prod, autoprefixer()))
-        .pipe(gulpif(config.prod, minifyCss()))
-        .pipe(gulpif(!config.prod, gulp.dest(paths.site + cssDest)))
-        .pipe(gulpif(config.prod, gulp.dest(paths.dest + cssDest)));
+  return gulp.src(paths.scss)
+    .pipe(sass())
+    .pipe(concat(`flip.min.css`))
+    .pipe(gulpif(config.prod, autoprefixer()))
+    .pipe(gulpif(config.prod, minifyCss()))
+    .pipe(gulp.dest(paths.dest + cssDest));
 }

@@ -1,5 +1,5 @@
-﻿using Flip.Models;
 using System.Reflection;
+using Flip.Models;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
@@ -12,7 +12,7 @@ internal sealed class FlipService : IFlipService
     private readonly IContentTypeService _contentTypeService;
     private readonly IContentService _contentService;
     private readonly ILocalizationService _localizationService;
-    private readonly IBackOfficeSecurityAccessor _backofficeSecurityAccessor;
+    private readonly IBackOfficeSecurityAccessor _backOfficeSecurityAccessor;
 
     public FlipService(
         IContentTypeService contentTypeService,
@@ -22,7 +22,7 @@ internal sealed class FlipService : IFlipService
     {
         _contentTypeService = contentTypeService;
         _contentService = contentService;
-        _backofficeSecurityAccessor = backOfficeSecurityAccessor;
+        _backOfficeSecurityAccessor = backOfficeSecurityAccessor;
         _localizationService = localizationService;
     }
 
@@ -46,7 +46,7 @@ internal sealed class FlipService : IFlipService
         IContentType? newType = _contentTypeService.GetAll().FirstOrDefault(x => x.Id == model.ContentTypeId);
         IEnumerable<ILanguage> languages = _localizationService.GetAllLanguages();
 
-        Dictionary<string, string>? cultureNames = new(); 
+        Dictionary<string, string>? cultureNames = new();
 
         if (node.ContentType.VariesByCulture())
         {
@@ -63,13 +63,14 @@ internal sealed class FlipService : IFlipService
         }
 
         MethodInfo? changeContentType = node.GetType()
-            .GetMethod("ChangeContentType",
+            .GetMethod(
+                "ChangeContentType",
                 types: new[] { typeof(IContentType), typeof(bool) },
                 modifiers: null,
                 binder: null,
                 bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
-        changeContentType?.Invoke(node, new object[] { newType, true });
+        _ = changeContentType?.Invoke(node, new object[] { newType, true });
 
         node.TemplateId = model.TemplateId;
 
@@ -104,13 +105,14 @@ internal sealed class FlipService : IFlipService
 
         if (newType.VariesByCulture())
         {
-            foreach (var lang in languages) {
-                var existingName = cultureNames.FirstOrDefault(x => x.Key == lang.IsoCode);
+            foreach (ILanguage lang in languages)
+            {
+                KeyValuePair<string, string> existingName = cultureNames.FirstOrDefault(x => x.Key == lang.IsoCode);
                 node.SetCultureName(existingName.Value ?? node.Name, lang.IsoCode);
             }
         }
 
-        _contentService.Save(node, _backofficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
+        _ = _contentService.Save(node, _backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
 
         message = "OK";
         return true;
@@ -119,12 +121,7 @@ internal sealed class FlipService : IFlipService
     /// <inheritdoc />
     public ChangeDocumentTypeModel GetContentModel(int nodeId)
     {
-        IContent? content = _contentService.GetById(nodeId);
-
-        if (content is null)
-        {
-            throw new Exception();
-        }
+        IContent? content = _contentService.GetById(nodeId) ?? throw new Exception();
 
         ChangeDocumentTypeModel model = new()
         {
@@ -140,7 +137,7 @@ internal sealed class FlipService : IFlipService
                 Editor = p.PropertyType.PropertyEditorAlias,
                 DataTypeKey = p.PropertyType.DataTypeKey.ToString(),
                 Value = p.GetValue(),
-                Values = p.Values.Select(v => (v.Culture, Value: v.EditedValue))
+                Values = p.Values.Select(v => (v.Culture, Value: v.EditedValue)),
             }),
         };
 
@@ -219,7 +216,7 @@ internal sealed class FlipService : IFlipService
     /// 
     /// </summary>
     /// <param name="documentTypes"></param>
-    /// <param name="children"></param>
+    /// <param name="nodeId"></param>
     /// <returns></returns>
     private IEnumerable<IContentType> RemoveInvalidByChildrenDocumentTypesFromAlternatives(IEnumerable<IContentType> documentTypes, int nodeId)
     {

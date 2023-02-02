@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Title>Flip</Title>
@@ -13,5 +13,10 @@
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.*" />
     <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.*" />
-  </ItemGroup> 
+  </ItemGroup>
+
+  <Import Project="build\Microsoft.AspNetCore.ClientAssets.targets" />
+  <Target Name="ClientAssetsBuildOutputPath" AfterTargets="ClientAssetsBuild">
+    <WriteLinesToFile File="Backoffice\gulp\config.outputPath.js" Lines="export const outputPath = '../$(IntermediateOutputPath.Replace('\', '/'))clientassets';" Overwrite="true" />
+  </Target>
 </Project>

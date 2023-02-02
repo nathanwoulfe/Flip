@@ -433,6 +433,3 @@ FodyWeavers.xsd
 #include db
 !**/App_Data/Umbraco.sdf
 !**/umbraco/Data/Umbraco.sdf
-
-#specific
-**/App_Plugins/Flip/

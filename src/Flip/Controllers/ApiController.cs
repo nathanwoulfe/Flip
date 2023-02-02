@@ -1,9 +1,9 @@
-﻿using Flip.Services;
 using Flip.Models;
+using Flip.Services;
 using Microsoft.AspNetCore.Mvc;
-using Umbraco.Cms.Web.Common.Attributes;
-using Umbraco.Cms.Web.BackOffice.Controllers;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Web.BackOffice.Controllers;
+using Umbraco.Cms.Web.Common.Attributes;
 
 namespace Flip.Controllers;
 
@@ -12,10 +12,7 @@ public class ApiController : UmbracoAuthorizedApiController
 {
     private readonly IFlipService _flipService;
 
-    public ApiController(IFlipService flipService)
-    {
-        _flipService = flipService;
-    }
+    public ApiController(IFlipService flipService) => _flipService = flipService;
 
     /// <summary>
     /// 
@@ -27,7 +24,8 @@ public class ApiController : UmbracoAuthorizedApiController
     {
         IEnumerable<IContentType> permittedTypes = _flipService.GetPermittedTypes(nodeId);
 
-        return Ok(new { 
+        return Ok(new
+        {
             permittedTypes,
         });
     }

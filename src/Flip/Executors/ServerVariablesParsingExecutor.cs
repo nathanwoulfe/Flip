@@ -1,7 +1,7 @@
 ﻿using Flip.Controllers;
-using Umbraco.Cms.Core.Services;
-using Umbraco.Cms.Core;
 using Microsoft.AspNetCore.Routing;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 
 namespace Flip.Executors;
@@ -25,7 +25,9 @@ internal sealed class ServerVariablesParsingExecutor : IServerVariablesParsingEx
     public void Generate(IDictionary<string, object> dictionary)
     {
         if (_runtimeState.Level != RuntimeLevel.Run)
+        {
             return;
+        }
 
         Dictionary<string, object> umbracoSettings = dictionary["umbracoSettings"] as Dictionary<string, object> ?? new Dictionary<string, object>();
         string pluginPath = $"{umbracoSettings["appPluginsPath"]}/Flip/Backoffice";

@@ -9,8 +9,8 @@ public sealed class ServerVariablesParsingHandler : INotificationHandler<ServerV
     private readonly IServerVariablesParsingExecutor _serverVariablesParsingExecutor;
 
     public ServerVariablesParsingHandler(IServerVariablesParsingExecutor serverVariablesParsingExecutor) =>
-        _serverVariablesParsingExecutor = serverVariablesParsingExecutor;        
+        _serverVariablesParsingExecutor = serverVariablesParsingExecutor;
 
     public void Handle(ServerVariablesParsingNotification notification) =>
-        _serverVariablesParsingExecutor.Generate(notification.ServerVariables);        
+        _serverVariablesParsingExecutor.Generate(notification.ServerVariables);
 }

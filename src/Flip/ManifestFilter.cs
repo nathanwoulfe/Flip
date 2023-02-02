@@ -1,4 +1,4 @@
-﻿using Umbraco.Cms.Core.Manifest;
+using Umbraco.Cms.Core.Manifest;
 
 namespace Flip;
 
@@ -11,11 +11,11 @@ internal sealed class ManifestFilter : IManifestFilter
             PackageName = Constants.Name,
             Scripts = new[]
             {
-                "/App_Plugins/Flip/Backoffice/flip.min.js"
+                "/App_Plugins/Flip/Backoffice/flip.min.js",
             },
             Stylesheets = new[]
             {
-                "/App_Plugins/Flip/Backoffice/flip.min.css"
+                "/App_Plugins/Flip/Backoffice/flip.min.css",
             },
             BundleOptions = BundleOptions.None,
             Version = "10.0.0",
