@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <Title>Flip</Title>
     <PackageId>Flip.Umbraco</PackageId>
     <Description>Document type flipper for Umbraco CMS</Description>
@@ -12,8 +12,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.*" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.*" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="11.1.0" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="11.1.0" />
   </ItemGroup>
 
   <Import Project="build\Microsoft.AspNetCore.ClientAssets.targets" />

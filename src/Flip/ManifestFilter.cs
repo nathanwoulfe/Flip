@@ -18,7 +18,7 @@ internal sealed class ManifestFilter : IManifestFilter
                 "/App_Plugins/Flip/Backoffice/flip.min.css",
             },
             BundleOptions = BundleOptions.None,
-            Version = "10.0.0",
+            Version = "11.0.0",
         });
     }
 }
