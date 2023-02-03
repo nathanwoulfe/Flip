@@ -1,7 +1,6 @@
 <Project>
   <!--
         Copied from: https://github.com/aspnet/AspLabs/blob/main/src/ClientAssets/Microsoft.AspNetCore.ClientAssets/build/netstandard2.0/Microsoft.AspNetCore.ClientAssets.targets
-
         More information:
         - https://devblogs.microsoft.com/dotnet/build-client-web-assets-for-your-razor-class-library/
         - https://github.com/dotnet/aspnetcore/issues/38445
@@ -9,7 +8,7 @@
   <PropertyGroup>
     <ClientAssetsDirectory Condition="'$(ClientAssetsDirectory)' == ''">Backoffice\app\</ClientAssetsDirectory>
     <ClientAssetsRestoreInputs Condition="'$(ClientAssetsRestoreInputs)' == ''">package-lock.json;package.json</ClientAssetsRestoreInputs>
-    <ClientAssetsRestoreOutputs Condition="'$(ClientAssetsRestoreOutputs)' == ''">Backoffice\node_modules\.package-lock.json</ClientAssetsRestoreOutputs>
+    <ClientAssetsRestoreOutputs Condition="'$(ClientAssetsRestoreOutputs)' == ''">node_modules\.package-lock.json</ClientAssetsRestoreOutputs>
     <ClientAssetsRestoreCommand Condition="'$(ClientAssetsRestoreCommand)' == ''">npm ci --no-fund --no-audit --prefer-offline</ClientAssetsRestoreCommand>
     <ClientAssetsBuildCommand Condition="'$(ClientAssetsBuildCommand)' == ''">npm run build --prefix ./Backoffice</ClientAssetsBuildCommand>
     <ClientAssetsBuildOutputParameter Condition="'$(ClientAssetsBuildOutputParameter)' == ''">--output-path=</ClientAssetsBuildOutputParameter>
