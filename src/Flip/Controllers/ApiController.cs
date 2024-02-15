@@ -15,7 +15,7 @@ public class ApiController : UmbracoAuthorizedApiController
     public ApiController(IFlipService flipService) => _flipService = flipService;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="nodeId"></param>
     /// <returns></returns>
@@ -39,7 +39,7 @@ public class ApiController : UmbracoAuthorizedApiController
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>

@@ -46,7 +46,7 @@ internal sealed class FlipService : IFlipService
         IContentType? newType = _contentTypeService.GetAll().FirstOrDefault(x => x.Id == model.ContentTypeId);
         IEnumerable<ILanguage> languages = _localizationService.GetAllLanguages();
 
-        Dictionary<string, string>? cultureNames = new();
+        Dictionary<string, string>? cultureNames = [];
 
         if (node.ContentType.VariesByCulture())
         {
@@ -65,12 +65,12 @@ internal sealed class FlipService : IFlipService
         MethodInfo? changeContentType = node.GetType()
             .GetMethod(
                 "ChangeContentType",
-                types: new[] { typeof(IContentType), typeof(bool) },
+                types: [typeof(IContentType), typeof(bool)],
                 modifiers: null,
                 binder: null,
                 bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
-        _ = changeContentType?.Invoke(node, new object[] { newType, true });
+        _ = changeContentType?.Invoke(node, [newType, true]);
 
         node.TemplateId = model.TemplateId;
 
@@ -169,7 +169,7 @@ internal sealed class FlipService : IFlipService
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="documentTypes"></param>
     /// <param name="currentTypeId"></param>
@@ -178,7 +178,7 @@ internal sealed class FlipService : IFlipService
         documentTypes.Where(x => x.Id != currentTypeId);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="documentTypes"></param>
     /// <param name="parentId"></param>
@@ -213,7 +213,7 @@ internal sealed class FlipService : IFlipService
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="documentTypes"></param>
     /// <param name="nodeId"></param>

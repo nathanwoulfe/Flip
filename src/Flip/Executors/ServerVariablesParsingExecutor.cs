@@ -1,15 +1,10 @@
-﻿using Flip.Controllers;
+using Flip.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 
 namespace Flip.Executors;
-
-public interface IServerVariablesParsingExecutor
-{
-    void Generate(IDictionary<string, object> dictionary);
-}
 
 internal sealed class ServerVariablesParsingExecutor : IServerVariablesParsingExecutor
 {
@@ -29,7 +24,7 @@ internal sealed class ServerVariablesParsingExecutor : IServerVariablesParsingEx
             return;
         }
 
-        Dictionary<string, object> umbracoSettings = dictionary["umbracoSettings"] as Dictionary<string, object> ?? new Dictionary<string, object>();
+        Dictionary<string, object> umbracoSettings = dictionary["umbracoSettings"] as Dictionary<string, object> ?? [];
         string pluginPath = $"{umbracoSettings["appPluginsPath"]}/Flip/Backoffice";
 
         Dictionary<string, object> flipDictionary = new()

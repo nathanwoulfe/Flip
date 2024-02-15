@@ -9,14 +9,14 @@ internal sealed class ManifestFilter : IManifestFilter
         manifests.Add(new PackageManifest
         {
             PackageName = Constants.Name,
-            Scripts = new[]
-            {
+            Scripts =
+            [
                 "/App_Plugins/Flip/Backoffice/flip.min.js",
-            },
-            Stylesheets = new[]
-            {
+            ],
+            Stylesheets =
+            [
                 "/App_Plugins/Flip/Backoffice/flip.min.css",
-            },
+            ],
             BundleOptions = BundleOptions.None,
             Version = "11.0.0",
         });

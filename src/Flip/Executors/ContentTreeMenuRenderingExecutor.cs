@@ -9,11 +9,6 @@ using UmbConstants = Umbraco.Cms.Core.Constants;
 
 namespace Flip.Executors;
 
-public interface IContentTreeMenuRenderingExecutor
-{
-    void CheckAddFlipAction(string treeAlias, string nodeId, MenuItemCollection menu);
-}
-
 internal sealed class ContentTreeMenuRenderingExecutor : IContentTreeMenuRenderingExecutor
 {
     private readonly IBackOfficeSecurityAccessor _backOfficeSecurityAccessor;
