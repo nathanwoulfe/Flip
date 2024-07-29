@@ -5,9 +5,9 @@ namespace Flip.Services;
 
 public interface IFlipService
 {
-    bool TryChangeContentType(ChangeDocumentTypeModel model, out string message);
+    Task<bool> TryChangeContentType(ChangeDocumentTypeResponseModel model);
 
-    IEnumerable<IContentType> GetPermittedTypes(int nodeId);
+    IEnumerable<IContentType> GetPermittedTypes(Guid unique);
 
-    ChangeDocumentTypeModel GetContentModel(int nodeId);
+    ChangeDocumentTypeResponseModel GetContentModel(Guid unique);
 }
