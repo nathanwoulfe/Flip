@@ -15,38 +15,39 @@ internal sealed class FlipService : IFlipService
     private readonly ILanguageService _languageService;
     private readonly IBackOfficeSecurityAccessor _backOfficeSecurityAccessor;
     private readonly IIdKeyMap _idKeyMap;
+    private readonly IDataTypeService _dataTypeService;
 
     public FlipService(
         IContentTypeService contentTypeService,
         IContentService contentService,
         IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
         ILanguageService languageService,
-        IIdKeyMap idKeyMap)
+        IIdKeyMap idKeyMap,
+        IDataTypeService dataTypeService)
     {
         _contentTypeService = contentTypeService;
         _contentService = contentService;
         _backOfficeSecurityAccessor = backOfficeSecurityAccessor;
         _languageService = languageService;
         _idKeyMap = idKeyMap;
+        _dataTypeService = dataTypeService;
     }
 
-    public async Task<bool> TryChangeContentType(ChangeDocumentTypeResponseModel model)
+    public async Task<Attempt<bool, string>> ChangeDocumentType(ChangeDocumentTypeRequestModel model)
     {
         IContent? node = _contentService.GetById(model.Unique);
 
         if (node is null)
         {
-            //message = "Could not find source content";
-            return false;
+            return Attempt.FailWithStatus("Could not find source content", false);
         }
 
-        if (node.ContentType.Id == model.ContentTypeId)
+        if (node.ContentType.Key == model.DocumentTypeUnique)
         {
-            //message = "Current type and target type are the same";
-            return false;
+            return Attempt.FailWithStatus("Current type and target type are the same", false);
         }
 
-        IContentType? newType = _contentTypeService.GetAll().FirstOrDefault(x => x.Id == model.ContentTypeId);
+        IContentType? newType = _contentTypeService.GetAll().FirstOrDefault(x => x.Key == model.DocumentTypeUnique);
         IEnumerable<ILanguage> languages = await _languageService.GetAllAsync();
 
         Dictionary<string, string>? cultureNames = [];
@@ -62,8 +63,10 @@ internal sealed class FlipService : IFlipService
         if (newType is null)
         {
             //message = "Could not find target content type";
-            return false;
+            return Attempt.FailWithStatus("Could not find the target content type", false);
         }
+
+        var oldProperties = node.Properties.DeepClone() as IPropertyCollection;
 
         MethodInfo? changeContentType = node.GetType()
             .GetMethod(
@@ -80,10 +83,18 @@ internal sealed class FlipService : IFlipService
         // ensure properties are cleared and re-mapped
         foreach (IProperty prop in node.Properties)
         {
-            DocumentTypePropertyResponseModel? newProp = model.Properties?.FirstOrDefault(p => p.NewAlias == prop.Alias);
+            // get the original property by looking up the original alias via the new.
+            DocumentTypePropertyResponseModel? mappedProp = model.Properties?.FirstOrDefault(p => p.NewAlias == prop.Alias);
+            if (mappedProp is null)
+            {
+                node.SetValue(prop.Alias, null);
+                continue;
+            }
+
+            IProperty? oldProp = oldProperties?.FirstOrDefault(x => x.Alias == mappedProp?.Alias);
 
             // if no values, set default to null
-            if (newProp?.Values is null)
+            if (oldProp?.Values is null)
             {
                 node.SetValue(prop.Alias, null);
                 continue;
@@ -95,15 +106,15 @@ internal sealed class FlipService : IFlipService
             {
                 foreach (ILanguage language in languages)
                 {
-                    (string? culture, object? value) = newProp.Values.Count() == 1 ? newProp.Values.First() : newProp.Values.FirstOrDefault(x => x.Culture == language.IsoCode);
-                    node.SetValue(prop.Alias, value ?? null, language.IsoCode);
+                    IPropertyValue? value = oldProp.Values.Count == 1 ? oldProp.Values.First() : oldProp.Values.FirstOrDefault(x => x.Culture == language.IsoCode);
+                    node.SetValue(prop.Alias, value, language.IsoCode);
                 }
 
                 continue;
             }
 
             // use the first item if exists, else fall back to null value
-            node.SetValue(prop.Alias, newProp.Values.Any() ? newProp.Values.First().Value : null);
+            node.SetValue(prop.Alias, oldProp.GetValue());
         }
 
         if (newType.VariesByCulture())
@@ -117,29 +128,32 @@ internal sealed class FlipService : IFlipService
 
         _ = _contentService.Save(node, _backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
 
-        //message = "OK";
-        return true;
+        return Attempt.SucceedWithStatus(string.Empty, true);
     }
 
-    public ChangeDocumentTypeResponseModel GetContentModel(Guid unique)
+    public async Task<ContentModelResponseModel> GetContentModel(Guid unique)
     {
         IContent? content = _contentService.GetById(unique) ?? throw new NullReferenceException(nameof(content));
+        IEnumerable<IDataType> dataTypes = await _dataTypeService.GetAllAsync(content.Properties.Select(prop => prop.PropertyType.DataTypeKey).ToArray());
 
-        ChangeDocumentTypeResponseModel model = new()
+        ContentModelResponseModel model = new()
         {
             Unique = unique,
-            NodeName = content.Name,
+            Name = content.Name,
             TemplateId = content.TemplateId,
-            ContentTypeId = content.ContentTypeId,
-            ContentTypeName = content.ContentType.Name,
+            DocumentType = new()
+            {
+                Unique = content.ContentType.Key,
+                Name = content.ContentType.Name ?? content.ContentType.Alias,
+                Alias = content.ContentType.Alias,
+                Icon = content.ContentType.Icon,
+            },
             Properties = content.Properties.Select(p => new DocumentTypePropertyResponseModel()
             {
                 Alias = p.Alias,
                 Label = p.PropertyType.Name,
-                Editor = p.PropertyType.PropertyEditorAlias,
-                DataTypeKey = p.PropertyType.DataTypeKey.ToString(),
-                Value = p.GetValue(),
-                Values = p.Values.Select(v => (v.Culture, Value: v.EditedValue)),
+                DataTypeKey = p.PropertyType.DataTypeKey,
+                Editor = dataTypes.First(x => x.Key == p.PropertyType.DataTypeKey)?.EditorUiAlias,
             }),
         };
 

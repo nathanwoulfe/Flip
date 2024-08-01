@@ -20,9 +20,13 @@
     <PackageReference Include="Umbraco.Cms.Api.Common" Version="[14.1.0, 15)" />
     <PackageReference Include="Umbraco.Cms.Api.Management" Version="[14.1.0, 15)" />
   </ItemGroup>
-
-  <!--<Import Project="build\Microsoft.AspNetCore.ClientAssets.targets" />
+  
+  <Import Project="build\Microsoft.AspNetCore.ClientAssets.targets" />
+    <PropertyGroup>
+    <!-- Use this to (temporarily) disable building client assets, e.g. to start the project and generate updated API models -->
+    <ShouldRunClientAssetsBuild>true</ShouldRunClientAssetsBuild>
+  </PropertyGroup>
   <Target Name="ClientAssetsBuildOutputPath" AfterTargets="ClientAssetsBuild">
-    <WriteLinesToFile File="Backoffice\gulp\config.outputPath.js" Lines="export const outputPath = '../$(IntermediateOutputPath.Replace('\', '/'))clientassets';" Overwrite="true" />
-  </Target>-->
+    <WriteLinesToFile File="Backoffice\config.outputPath.js" Lines="export const outputPath = '../$(IntermediateOutputPath.Replace('\', '/'))clientassets';" Overwrite="true" />
+  </Target>
 </Project>

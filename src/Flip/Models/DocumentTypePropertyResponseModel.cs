@@ -6,13 +6,9 @@ public sealed class DocumentTypePropertyResponseModel
 
     public string? Alias { get; set; }
 
-    public object? Value { get; set; }
-
-    public IEnumerable<(string? Culture, object? Value)>? Values { get; set; }
-
     public string? NewAlias { get; set; }
 
     public string? Editor { get; set; }
 
-    public string? DataTypeKey { get; set; }
+    public Guid DataTypeKey { get; set; }
 }

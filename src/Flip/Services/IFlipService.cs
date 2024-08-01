@@ -1,13 +1,14 @@
 using Flip.Models;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 
 namespace Flip.Services;
 
 public interface IFlipService
 {
-    Task<bool> TryChangeContentType(ChangeDocumentTypeResponseModel model);
+    Task<Attempt<bool, string>> ChangeDocumentType(ChangeDocumentTypeRequestModel model);
 
     IEnumerable<IContentType> GetPermittedTypes(Guid unique);
 
-    ChangeDocumentTypeResponseModel GetContentModel(Guid unique);
+    Task<ContentModelResponseModel> GetContentModel(Guid unique);
 }

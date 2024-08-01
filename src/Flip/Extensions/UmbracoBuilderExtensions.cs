@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Umbraco.Cms.Api.Common.DependencyInjection;
 using Umbraco.Cms.Api.Common.OpenApi;
 using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Workflow.Web.Api.Configuration;
 
 namespace Flip.Extensions;
 
@@ -55,7 +56,9 @@ public static class UmbracoBuilderExtensions
                     });
                 options.DocumentFilter<MimeTypeDocumentFilter>(ApiConstants.ApiName);
                 options.OperationFilter<BackOfficeSecurityRequirementsOperationFilter>();
-            });
+            })
+            .AddSingleton<ISchemaIdHandler, FlipSchemaIdHandler>()
+            .AddSingleton<IOperationIdHandler, FlipOperationIdHandler>();
 
         return builder;
     }

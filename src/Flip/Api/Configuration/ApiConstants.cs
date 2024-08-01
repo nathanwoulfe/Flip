@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Flip.Api.Configuration;
 
 internal class ApiConstants
@@ -11,7 +5,7 @@ internal class ApiConstants
     /// <summary>
     /// The API root path.
     /// </summary>
-    public const string RootPath = "/umbraco/flip/management/api";
+    public const string RootPath = "flip/management/api";
 
     /// <summary>
     /// The API group name.

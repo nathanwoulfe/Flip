@@ -9,7 +9,6 @@ namespace Flip.Api.Controllers;
 [ApiController]
 [MapToApi(ApiConstants.ApiName)]
 [Authorize(Policy = AuthorizationPolicies.BackOfficeAccess)]
-[Route($"{ApiConstants.RootPath}/v1/")]
 public abstract class FlipControllerBase : ControllerBase
 {
 }
