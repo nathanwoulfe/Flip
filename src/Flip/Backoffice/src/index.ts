@@ -7,8 +7,9 @@ import { manifests as localizationManifests } from "./lang/manifests.js";
 import { manifests as permissionManifests } from "./permission/manifests.js";
 
 export * from "./modal/index.js";
+export * from "./components/index.js";
 
-export const onInit: UmbEntryPointOnInit = (_host, extensionRegistry) => {
+export const onInit: UmbEntryPointOnInit = (host, extensionRegistry) => {
   extensionRegistry.registerMany([
     ...modalManifests,
     ...entityActionManifests,
@@ -16,11 +17,10 @@ export const onInit: UmbEntryPointOnInit = (_host, extensionRegistry) => {
     ...permissionManifests,
   ]);
 
-  _host.consumeContext(UMB_AUTH_CONTEXT, async (auth) => {
+  host.consumeContext(UMB_AUTH_CONTEXT, async (auth) => {
     if (!auth) return;
 
     const umbOpenApi = auth.getOpenApiConfiguration();
-
     OpenAPI.BASE = umbOpenApi.base;
     OpenAPI.TOKEN = umbOpenApi.token;
     OpenAPI.WITH_CREDENTIALS = umbOpenApi.withCredentials;

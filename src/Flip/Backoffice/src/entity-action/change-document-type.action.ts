@@ -6,20 +6,9 @@ import { tryExecuteAndNotify } from "@umbraco-cms/backoffice/resources";
 import { UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN } from "@umbraco-cms/backoffice/document";
 
 export class FlipChangeDocumentTypeEntityAction extends UmbEntityActionBase<never> {
-  #modalManager?: typeof UMB_MODAL_MANAGER_CONTEXT.TYPE;
-
-  hostConnected(): void {
-    super.hostConnected();
-
-    this.consumeContext(UMB_MODAL_MANAGER_CONTEXT, (context) => {
-      this.#modalManager = context;
-    });
-  }
-
   async execute() {
-    if (!this.#modalManager) return;
-
-    const sidebarContext = this.#modalManager.open(
+    const modalManager = await this.getContext(UMB_MODAL_MANAGER_CONTEXT);
+    const sidebarContext = modalManager.open(
       this,
       FLIP_CHANGE_DOCUMENT_TYPE_MODAL,
       {

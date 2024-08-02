@@ -24,7 +24,9 @@
     "paths": {
       "@flip/modal": ["./src/modal/index.ts"],
       "@flip/entity-action": ["./src/entity-action/index.ts"],
-      "@flip/generated": ["./generated/index.ts"]
+      "@flip/generated": ["./generated/index.ts"],
+      "@flip/components": ["./src/components/index.ts"],
+      "@flip/entities": ["./src/entities.ts"],
     }
   },
   "include": [ "src" ]

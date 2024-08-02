@@ -4,7 +4,7 @@ export default {
   flip: {
     userPermissionDescription: "Allow access to change a document type",
     changeDocumentType: "Change Document Type",
-    propertyEditor: "Property Editor",
+    propertyEditor: "Property Editor UI",
     dataType: "Data Type",
     newType: "New Document Type",
     newTemplate: "New template",
@@ -18,9 +18,9 @@ export default {
     mapProperties: "Map properties",
     mapType: "Mapping type",
     mapPropertiesInstruction:
-      "Confirm and/or amend the mapping of properties from the current type to the new type, then click Save. Blank or unmapped properties will be set to empty.",
+      "Confirm and/or amend the mapping of properties from the current type to the new type. Blank or unmapped properties will be ignored.",
     mapTypeInstruction: `Mapping by Data Type restricts mapping to properties using the exact Data Type (ie any property using the Textarea Data Type), 
-		mapping by Property Editor restricts mapping to properties using the same editor type (ie any property using the Umbraco.Textbox editor). 
+		mapping by Property Editor UI restricts mapping to properties using the same editor type (ie any property using the Umb.PropertyEditorUi.Textbox editor). 
 		Mapping by Data Type prevents config mismatches when mapping between properties using different instances of the same editor.`,
   },
 } as UmbLocalizationDictionary;
