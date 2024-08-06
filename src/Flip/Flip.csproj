@@ -27,6 +27,6 @@
     <ShouldRunClientAssetsBuild>true</ShouldRunClientAssetsBuild>
   </PropertyGroup>
   <Target Name="ClientAssetsBuildOutputPath" AfterTargets="ClientAssetsBuild">
-    <WriteLinesToFile File="Backoffice\config.outputPath.js" Lines="export const outputPath = '../$(IntermediateOutputPath.Replace('\', '/'))clientassets';" Overwrite="true" />
+    <WriteLinesToFile File="Backoffice\config.outputPath.js" Lines="export const outputPath = '$(Configuration)' !== 'Release' ? '../wwwroot' : '../$(IntermediateOutputPath.Replace('\', '/'))clientassets';" Overwrite="true" />
   </Target>
 </Project>

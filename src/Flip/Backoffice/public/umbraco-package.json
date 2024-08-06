@@ -1,6 +1,8 @@
 {
+  "id": "flip.umbraco",
   "name": "Flip",
-  "version": "",
+  "version": "14.0.0",
+  "allowPackageTelemetry": true,
   "extensions": [
     {
       "name": "Flip EntryPoint",
