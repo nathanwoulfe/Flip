@@ -36,7 +36,7 @@
     }
 
     /**
-     * 
+     *
      * */
     getPermittedTypes() {
         this.flipResource.getPermittedTypes(this.$scope.currentNode.id)
@@ -52,7 +52,7 @@
     }
 
     /**
-     * 
+     *
      * */
     getNewTypePropertyCollection(setsNewType: boolean = false) {
         this.newProperties = {};
@@ -67,9 +67,7 @@
         });
 
         // iterates over explict and composed properties
-        const propertyTypes = [
-            ...this.newType.ContentTypeComposition.map(x => x.PropertyGroups.map(y => y.PropertyTypes).flat()).flat(),
-            ...this.newType.PropertyGroups.map(x => x.PropertyTypes).flat()];
+        const propertyTypes = this.getCompositionPropertyCollection(this.newType);
 
         propertyTypes.forEach(type => {
             const propertyKey = this.mapType === 'DATATYPE' ? type.DataTypeKey : type.PropertyEditorAlias;
@@ -101,15 +99,24 @@
         });
     }
 
+    getCompositionPropertyCollection(composition: any) {
+      const propertyTypes = [
+        ...composition.PropertyGroups.map(x => x.PropertyTypes).flat(),
+        ...composition.ContentTypeComposition.map(x => this.getCompositionPropertyCollection(x)).flat()
+      ];
+
+      return propertyTypes;
+    }
+
     /**
-     * 
+     *
      * */
     close() {
         this.navigationService.hideDialog();
     }
 
     /**
-     * 
+     *
      * */
     save() {
         this.flipResource.changeContentType(this.$scope.currentNode.id, this.newType.Id, this.newTemplateId || this.newType.DefaultTemplateId, this.node.properties)
