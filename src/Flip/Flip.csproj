@@ -8,6 +8,7 @@
     <StaticWebAssetBasePath>App_Plugins/Flip</StaticWebAssetBasePath>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
