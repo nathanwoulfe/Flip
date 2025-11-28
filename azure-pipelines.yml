@@ -12,7 +12,7 @@ parameters:
   - name: cache_npm
     displayName: Cache NPM packages
     type: boolean
-    default: true
+    default: false
   - name: cache_nuget
     displayName: Cache NuGet packages
     type: boolean
