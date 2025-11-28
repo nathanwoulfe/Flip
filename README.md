@@ -1,6 +1,4 @@
-# Flip
-
-## A history lesson
+## First, a quick history lesson
 
 Cast your mind back, if you will, to the heady days of Umbraco 7. We had a fresh new backoffice, shiny and glorious.
 
@@ -41,20 +39,16 @@ For any complex data - Block Lists, Nested Content - it's probably not a great i
 
 As property mapping is opt-in, it's completely viable to map simple values, ignore Block List, and re-build the list on the new type.
 
+To re-iterate: this is an experimental package. Experiment at your own risk.
+
 ## Supported versions
 
-Flip will play nice with Umbraco 8 and 9, and should be fine on Umbraco 10 (currently untested).
+Flip will play nice with Umbraco 8-13, and 17+ and above. Skipped 14, 15 and 16 because of reasons.
 
 ## Installation
 
-Install via Nuget: `Install-Package Flip.Umbraco`
+`Install-Package Flip.Umbraco` or `dotnet add package Flip.Umbraco`
 
-## Getting started
+## Credits
 
-Feel like poking the bear? Here's how:
-
- - Clone the repo
- - CD your way to /src/flip.backoffice
- - `gulp dev`
- - Run either the Flip.Umbraco8 or Flip.Umbraco9 test sites
- - Log in to either using `test@test.test` as both email and password
+Icon: flip by Joshua Weber from <a href="https://thenounproject.com/browse/icons/term/flip/" target="_blank" title="flip Icons">Noun Project</a>

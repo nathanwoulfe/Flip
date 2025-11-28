@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <!-- Global packages (private, build-time packages for all projects) -->
+  <ItemGroup>
+    <GlobalPackageReference Include="Nerdbank.GitVersioning" Version="3.8.118" />
+    <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
+    <GlobalPackageReference Include="Umbraco.GitVersioning.Extensions" Version="0.2.0" />
+    <GlobalPackageReference Include="Umbraco.JsonSchema.Extensions" Version="0.3.0" />
+  </ItemGroup>
+  <!-- Umbraco packages -->
+  <PropertyGroup>
+    <UmbracoCmsPackageVersion>[17.0.0, 17.999.999)</UmbracoCmsPackageVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Umbraco.Cms.Api.Common" Version="$(UmbracoCmsPackageVersion)" />
+    <PackageVersion Include="Umbraco.Cms.Api.Management" Version="$(UmbracoCmsPackageVersion)" />
+    <PackageVersion Include="Umbraco.Cms.Web.Common" Version="$(UmbracoCmsPackageVersion)" />
+    <PackageVersion Include="Umbraco.Cms.Web.Website" Version="$(UmbracoCmsPackageVersion)" />
+  </ItemGroup>
+</Project>
