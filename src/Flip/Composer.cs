@@ -1,11 +1,11 @@
-using Flip.Executors;
-using Flip.Handlers;
+using Flip.Api.Configuration;
 using Flip.Services;
-using Flip.Services.Implement;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Umbraco.Cms.Api.Common.OpenApi;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
-using Umbraco.Cms.Core.Notifications;
 
 namespace Flip;
 
@@ -13,14 +13,21 @@ internal class Composer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
-        _ = builder.ManifestFilters().Append<ManifestFilter>();
-
         _ = builder.Services
-            .AddSingleton<IFlipService, FlipService>()
-            .AddSingleton<IContentTreeMenuRenderingExecutor, ContentTreeMenuRenderingExecutor>()
-            .AddSingleton<IServerVariablesParsingExecutor, ServerVariablesParsingExecutor>();
+            .AddSingleton<IFlipService, FlipService>();
 
-        _ = builder.AddNotificationHandler<MenuRenderingNotification, ContentTreeMenuRenderingHandler>()
-            .AddNotificationHandler<ServerVariablesParsingNotification, ServerVariablesParsingHandler>();
+        builder.Services.Configure<SwaggerGenOptions>(options =>
+        {
+            options.SwaggerDoc(
+                ApiConstants.ApiName,
+                new OpenApiInfo
+                {
+                    Title = ApiConstants.ApiTitle,
+                    Version = "Latest",
+                    Description = $"Describes the {ApiConstants.ApiTitle} available for the Flip backoffice extension."
+                });
+
+            options.OperationFilter<BackOfficeSecurityRequirementsOperationFilter>();
+        }).AddSingleton<IOperationIdHandler, Api.Configuration.OperationIdHandler>();
     }
 }

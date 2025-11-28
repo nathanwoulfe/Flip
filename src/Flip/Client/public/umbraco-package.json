@@ -1,0 +1,12 @@
+{
+  "name": "Flip",
+  "version": "",
+  "extensions": [
+    {
+      "name": "Flip Backoffice EntryPoint",
+      "alias": "Flip.BackofficeEntryPoint",
+      "type": "backofficeEntryPoint",
+      "js": "/App_Plugins/Flip/flip.js"
+    }
+  ]
+}

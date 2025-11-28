@@ -43,7 +43,7 @@ To re-iterate: this is an experimental package. Experiment at your own risk.
 
 ## Supported versions
 
-Flip will play nice with Umbraco 8 and above.
+Flip will play nice with Umbraco 8-13, and 17+ and above. Skipped 14, 15 and 16 because of reasons.
 
 ## Installation
 

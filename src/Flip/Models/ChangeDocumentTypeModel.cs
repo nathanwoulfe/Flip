@@ -1,24 +1,15 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Flip.Models;
 
 public sealed class ChangeDocumentTypeModel
 {
-    [JsonProperty("nodeName")]
-    public string? NodeName { get; set; }
+    public Guid Unique { get; set; }
 
-    [JsonProperty("nodeId")]
-    public int NodeId { get; set; }
+    [JsonPropertyName("contentTypeUnique")]
+    public Guid ContentTypeKey { get; set; }
 
-    [JsonProperty("contentTypeId")]
-    public int ContentTypeId { get; set; }
-
-    [JsonProperty("contentTypeName")]
-    public string? ContentTypeName { get; set; }
-
-    [JsonProperty("templateId")]
     public int? TemplateId { get; set; }
 
-    [JsonProperty("properties")]
     public IEnumerable<DocumentTypePropertyModel>? Properties { get; set; }
 }

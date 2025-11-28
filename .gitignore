@@ -433,3 +433,5 @@ FodyWeavers.xsd
 #include db
 !**/App_Data/Umbraco.sdf
 !**/umbraco/Data/Umbraco.sdf
+
+**/wwwroot

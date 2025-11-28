@@ -85,13 +85,13 @@ trim_trailing_whitespace = true
 [*.less]
 trim_trailing_whitespace = false
 
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+
 ##########################################
 # File Header (Uncomment to support file headers)
 # https://docs.microsoft.com/visualstudio/ide/reference/add-file-header
 ##########################################
-
-# [*.{cs,csx,cake,vb,vbx}]
-file_header_template = Copyright (c) Umbraco.\nSee LICENSE for more details.
 
 # SA1636: File header copyright text should match
 # Justification: .editorconfig supports file headers. If this is changed to a value other than "none", a stylecop.json file will need to added to the project.
