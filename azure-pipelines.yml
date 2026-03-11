@@ -77,6 +77,14 @@ stages:
                 nuget
               path: $(NUGET_PACKAGES)
 
+          - script: npm ci
+            displayName: Install NPM packages
+            workingDirectory: src/Flip/Client
+
+          - script: npm run build
+            displayName: Build client assets
+            workingDirectory: src/Flip/Client
+
           - script: dotnet restore $(solution) --locked-mode
             displayName: Restore NuGet packages
 
