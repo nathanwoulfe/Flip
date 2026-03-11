@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/master/src/NerdBank.GitVersioning/version.schema.json",
-  "version": "17.0.1",
+  "version": "17.0.2",
   "assemblyVersion": {
     "precision": "build"
   },
@@ -8,10 +8,7 @@
   "nugetPackageVersion": {
     "semVer": 2
   },
-  "publicReleaseRefSpec": [
-    "^refs/heads/main$",
-    "^refs/tags/release-"
-  ],
+  "publicReleaseRefSpec": ["^refs/heads/main$", "^refs/tags/release-"],
   "cloudBuild": {
     "buildNumber": {
       "enabled": true
