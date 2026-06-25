@@ -1,2 +1,1 @@
-export * from "./change-document-type-modal.element.js";
-export * from "./change-document-type-modal.token.js";
+export * from "./change-entity-type-modal.token.js";

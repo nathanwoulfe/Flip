@@ -1,5 +1,4 @@
-using Umbraco.Cms.Api.Management.Controllers.User.ClientCredentials;
-using Umbraco.Cms.Api.Management.ViewModels.Template;
+using System.Text.Json.Serialization;
 
 namespace Flip.Models;
 
@@ -9,7 +8,8 @@ public class ContentTypeModel
 
     public Guid Unique { get; set; }
 
-    public int DefaultTemplateId { get; set; }
+    [JsonPropertyName("defaultTemplateUnique")]
+    public Guid? DefaultTemplateKey { get; set; }
 
     public IEnumerable<PropertyTypeModel> PropertyTypes { get; set; } = [];
 
@@ -22,6 +22,7 @@ public class PropertyTypeModel
 
     public string? Alias { get; set; }
 
+    [JsonPropertyName("dataTypeUnique")]
     public Guid DataTypeKey { get; set; }
 
     public string? PropertyEditorAlias { get; set; }
@@ -30,5 +31,7 @@ public class PropertyTypeModel
 public class TemplateModel
 {
     public string? Name { get; set; }
-    public int Id { get; set; }
+
+    [JsonPropertyName("unique")]
+    public Guid Key { get; set; }
 }

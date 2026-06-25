@@ -1,5 +1,6 @@
 using System.Reflection;
 using Flip.Models;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
@@ -7,29 +8,22 @@ using Umbraco.Extensions;
 
 namespace Flip.Services;
 
-internal sealed class FlipService : IFlipService
+internal abstract class FlipService<TEntity>(
+    IIdKeyMap idKeyMap,
+    IContentTypeService contentTypeService,
+    IBackOfficeSecurityAccessor backOfficeSecurityAccessor) : IFlipService<TEntity>
+    where TEntity : class, IPublishableContentBase
 {
-    private readonly IContentTypeService _contentTypeService;
-    private readonly IContentService _contentService;
-    private readonly IBackOfficeSecurityAccessor _backOfficeSecurityAccessor;
+    protected abstract IPublishableContentService<TEntity> EntityService { get; }
 
-    public FlipService(
-        IContentTypeService contentTypeService,
-        IContentService contentService,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor)
-    {
-        _contentTypeService = contentTypeService;
-        _contentService = contentService;
-        _backOfficeSecurityAccessor = backOfficeSecurityAccessor;
-    }
+    protected abstract UmbracoObjectTypes EntityObjectType { get; }
 
     /// <inheritdoc/>
-    public bool TryChangeContentType(ChangeDocumentTypeModel model, out string? message)
+    public bool TryChangeContentType(ChangeEntityTypeModel model, out string? message)
     {
         message = null;
-        IContent? node = _contentService.GetById(model.Unique);
 
-        if (node is null)
+        if (EntityService.GetById(model.Unique) is not TEntity node)
         {
             message = "Could not find source content";
             return false;
@@ -41,7 +35,11 @@ internal sealed class FlipService : IFlipService
             return false;
         }
 
-        IContentType? newType = _contentTypeService.GetAll().FirstOrDefault(x => x.Key == model.ContentTypeKey);
+        if (contentTypeService.GetAll().FirstOrDefault(x => x.Key == model.ContentTypeKey) is not IContentType newType)
+        {
+            message = "Could not find target content type";
+            return false;
+        }
 
         Dictionary<string, string>? cultureNames = [];
 
@@ -53,20 +51,14 @@ internal sealed class FlipService : IFlipService
             }
         }
 
-        if (newType is null)
-        {
-            message = "Could not find target content type";
-            return false;
-        }
-
         var properties = node.Properties
             .Where(p => p.Alias is not null)
-            .Select(p => new DocumentTypePropertyModel()
+            .Select(p => new EntityTypePropertyModel()
             {
                 Alias = p.Alias,
                 Label = p.PropertyType.Name,
                 Editor = p.PropertyType.PropertyEditorAlias,
-                DataTypeKey = p.PropertyType.DataTypeKey.ToString(),
+                DataTypeKey = p.PropertyType.DataTypeKey,
                 Value = p.GetValue(),
                 Values = p.Values.Select(v => (v.Culture, Value: v.EditedValue)),
             }).ToDictionary(x => x.Alias!);
@@ -81,20 +73,22 @@ internal sealed class FlipService : IFlipService
 
         _ = changeContentType?.Invoke(node, [newType, true]);
 
-        node.TemplateId = model.TemplateId;
+        if (node is IContent contentNode)
+        {
+            contentNode.TemplateId = model.TemplateKey.HasValue ? idKeyMap.GetIdForKey(model.TemplateKey.Value, UmbracoObjectTypes.Template).Result : 0;
+        }
 
         // ensure properties are cleared and re-mapped
         foreach (IProperty prop in node.Properties)
         {
             // finds the new property to map to
-            DocumentTypePropertyModel? newProp = model.Properties?.FirstOrDefault(p => p.NewAlias == prop.Alias);
-            if (newProp is null)
+            if (model.Properties?.FirstOrDefault(p => p.NewAlias == prop.Alias) is not EntityTypePropertyModel newProp)
             {
                 continue;
             }
 
             // and the original value before we switch the type
-            DocumentTypePropertyModel? oldProp = properties[prop.Alias];
+            EntityTypePropertyModel? oldProp = properties[prop.Alias];
             newProp.Values = oldProp?.Values;
             newProp.Value = oldProp?.Value;
 
@@ -131,28 +125,29 @@ internal sealed class FlipService : IFlipService
             }
         }
 
-        _ = _contentService.Save(node, _backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
+        _ = EntityService.Save(node, backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
 
         return true;
     }
 
     /// <inheritdoc />
-    public ChangeDocumentTypeModel? GetContentModel(Guid unique)
+    public ChangeEntityTypeModel? GetContentModel(Guid unique)
     {
-        IContent? content = _contentService.GetById(unique);
-        if (content is null)
+        if (EntityService.GetById(unique) is not TEntity content)
         {
             return null;
         }
 
-        ChangeDocumentTypeModel model = new()
+        ChangeEntityTypeModel model = new()
         {
-            Properties = content.Properties.Select(p => new DocumentTypePropertyModel()
+            Unique = content.Key,
+            ContentTypeKey = content.ContentType.Key,
+            Properties = content.Properties.Select(p => new EntityTypePropertyModel()
             {
                 Alias = p.Alias,
                 Label = p.PropertyType.Name,
                 Editor = p.PropertyType.PropertyEditorAlias,
-                DataTypeKey = p.PropertyType.DataTypeKey.ToString(),
+                DataTypeKey = p.PropertyType.DataTypeKey,
             }),
         };
 
@@ -160,16 +155,16 @@ internal sealed class FlipService : IFlipService
     }
 
     /// <inheritdoc />
-    public IEnumerable<ContentTypeModel> GetPermittedTypes(Guid unique)
+    public async Task<IEnumerable<ContentTypeModel>> GetPermittedTypes(Guid unique)
     {
-        IContent? content = _contentService.GetById(unique);
-
-        if (content is null)
+        if (EntityService.GetById(unique) is not TEntity content)
         {
             return [];
         }
 
-        IEnumerable<IContentType> permittedTypes = _contentTypeService.GetAll();
+        IEnumerable<IContentType> permittedTypes = contentTypeService
+            .GetAll()
+            .Where(x => content is IContent ? !x.IsElement : x.IsElement);
 
         if (!permittedTypes.Any())
         {
@@ -177,14 +172,22 @@ internal sealed class FlipService : IFlipService
         }
 
         permittedTypes = RemoveCurrentDocumentTypeFromAlternatives(permittedTypes, content.ContentTypeId);
-        permittedTypes = RemoveInvalidByParentDocumentTypesFromAlternatives(permittedTypes, content.ParentId);
-        permittedTypes = RemoveInvalidByChildrenDocumentTypesFromAlternatives(permittedTypes, content.Id);
+
+        if (content is IContent)
+        {
+            permittedTypes = RemoveInvalidByParentDocumentTypesFromAlternatives(permittedTypes, content.ParentId);
+            permittedTypes = await RemoveInvalidByChildrenDocumentTypesFromAlternatives(permittedTypes, content.ContentType.Key);
+        }
+        else
+        {
+            permittedTypes = RemoveInvalidElementsFromAlternatives(permittedTypes, (IElement)content);
+        }
 
         return permittedTypes.Select(x => new ContentTypeModel()
         {
             Name = x.Name,
             Unique = x.Key,
-            DefaultTemplateId = x.DefaultTemplateId,
+            DefaultTemplateKey = x.DefaultTemplate?.Key,
             PropertyTypes = x.CompositionPropertyTypes.Select(y => new PropertyTypeModel()
             {
                 Name = y.Name,
@@ -195,9 +198,15 @@ internal sealed class FlipService : IFlipService
             AllowedTemplates = x.AllowedTemplates?.Select(y => new TemplateModel()
             {
                 Name = y.Name,
-                Id = y.Id,
+                Key = y.Key,
             }) ?? [],
         });
+    }
+
+    private IEnumerable<IContentType> RemoveInvalidElementsFromAlternatives(IEnumerable<IContentType> documentTypes, IElement element)
+    {
+        bool allowedInLibrary = element.ContentType.AllowedInLibrary;
+        return documentTypes.Where(x => x.AllowedInLibrary == allowedInLibrary);
     }
 
     /// <summary>
@@ -224,16 +233,18 @@ internal sealed class FlipService : IFlipService
         }
 
         // Below root, so only include those allowed as sub-nodes for the parent
-        IContent? parentNode = _contentService.GetById(parentId);
-
-        if (parentNode is null)
+        Attempt<Guid> parentKeyAttempt = idKeyMap.GetKeyForId(parentId, EntityObjectType);
+        if (!parentKeyAttempt.Success)
         {
             return [];
         }
 
-        IContentType? parentType = _contentTypeService.Get(parentNode.ContentTypeId);
+        if (EntityService.GetById(parentKeyAttempt.Result) is not TEntity parentNode)
+        {
+            return [];
+        }
 
-        if (parentType is null)
+        if (contentTypeService.Get(parentNode.ContentTypeId) is not IContentType parentType)
         {
             return [];
         }
@@ -248,14 +259,17 @@ internal sealed class FlipService : IFlipService
     ///
     /// </summary>
     /// <param name="documentTypes"></param>
-    /// <param name="nodeId"></param>
+    /// <param name="nodeKey"></param>
     /// <returns></returns>
-    private IEnumerable<IContentType> RemoveInvalidByChildrenDocumentTypesFromAlternatives(IEnumerable<IContentType> documentTypes, int nodeId)
+    private async Task<IEnumerable<IContentType>> RemoveInvalidByChildrenDocumentTypesFromAlternatives(IEnumerable<IContentType> documentTypes, Guid nodeKey)
     {
-        IEnumerable<IContent> children = _contentService.GetPagedChildren(nodeId, 0, 10000, out _);
+        if (await contentTypeService.GetAllowedChildrenAsync(nodeKey, 0, int.MaxValue) is not { Success: true, Result: { } children })
+        {
+            return [];
+        }
 
-        IEnumerable<Guid> docTypeIdsOfChildren = children
-            .Select(x => x.ContentType.Key)
+        IEnumerable<Guid> docTypeIdsOfChildren = children.Items
+            .Select(x => x.Key)
             .Distinct();
 
         return documentTypes

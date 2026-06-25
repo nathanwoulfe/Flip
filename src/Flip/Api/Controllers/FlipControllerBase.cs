@@ -12,9 +12,7 @@ namespace Flip.Api.Controllers;
 [ApiVersion("1.0")]
 [BackOfficeRoute($"{ApiConstants.RootPath}/v{{version:apiVersion}}")]
 [MapToApi(ApiConstants.ApiName)]
-public abstract class FlipControllerBase : ControllerBase
+public abstract class FlipControllerBase(IFlipServiceFactory flipServiceFactory) : ControllerBase
 {
-    protected IFlipService FlipService { get; }
-
-    public FlipControllerBase(IFlipService flipService) => FlipService = flipService;
+    protected IFlipServiceFactory FlipServiceFactory { get; } = flipServiceFactory;
 }

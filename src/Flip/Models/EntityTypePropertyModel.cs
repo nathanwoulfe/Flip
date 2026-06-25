@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Flip.Models;
 
-public sealed class DocumentTypePropertyModel
+public sealed class EntityTypePropertyModel
 {
     public string? Label { get; set; }
 
@@ -18,5 +18,6 @@ public sealed class DocumentTypePropertyModel
 
     public string? Editor { get; set; }
 
-    public string? DataTypeKey { get; set; }
+    [JsonPropertyName("dataTypeUnique")]
+    public Guid? DataTypeKey { get; set; }
 }

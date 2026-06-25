@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { warn } from "console";
 
 export default defineConfig({
   build: {
@@ -9,9 +10,9 @@ export default defineConfig({
     outDir: "../wwwroot", // all compiled files will be placed here
     emptyOutDir: false,
     sourcemap: true,
-    rollupOptions: {
+    rolldownOptions: {
       external: [/^@umbraco/], // ignore the Umbraco Backoffice package in the build
-      onwarn: () => {},
+      onwarn: (err) => warn(err),
       output: {
         chunkFileNames: "[name].js",
       },

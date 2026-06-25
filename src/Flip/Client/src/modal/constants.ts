@@ -1,1 +1,1 @@
-export const CHANGE_DOCUMENT_TYPE_MODAL_ALIAS = "Flip.Modal.ChangeDocumentType";
+export const CHANGE_ENTITY_TYPE_MODAL_ALIAS = "Flip.Modal.ChangeEntityType";

@@ -45,6 +45,8 @@ To re-iterate: this is an experimental package. Experiment at your own risk.
 
 Flip will play nice with Umbraco 8-13, and 17+ and above. Skipped 14, 15 and 16 because of reasons.
 
+Flip 18 adds support for global elements, allowing type-switches within the Library.
+
 ## Installation
 
 `Install-Package Flip.Umbraco` or `dotnet add package Flip.Umbraco`

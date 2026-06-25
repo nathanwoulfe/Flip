@@ -3,14 +3,13 @@ import { defineConfig } from "@hey-api/openapi-ts";
 export default defineConfig({
   debug: true,
   input:
-    "http://localhost:23901/umbraco/swagger/flip-management/swagger.json",
+    "http://localhost:23901/umbraco/openapi/flip-management.json",
   output: {
     path: "generated",
   },
   plugins: [
     {
       name: "@hey-api/client-fetch",
-      bundle: false,
       exportFromIndex: true,
       throwOnError: true,
     },
@@ -20,9 +19,10 @@ export default defineConfig({
     },
     {
       name: "@hey-api/sdk",
-      asClass: true,
-      classNameBuilder: (name) => `${name}Service`,
-      responseStyle: "fields",
+      operations: {
+        containerName: (name) => `${name}Service`,
+        strategy: "byTags",
+      },
     },
   ],
 });

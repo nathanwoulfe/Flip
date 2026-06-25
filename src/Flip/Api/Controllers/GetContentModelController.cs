@@ -5,18 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Flip.Api.Controllers;
 
-public class GetContentModelController : FlipControllerBase
+public class GetContentModelController(IFlipServiceFactory flipServiceFactory) : FlipControllerBase(flipServiceFactory)
 {
-    public GetContentModelController(IFlipService flipService) : base(flipService)
-    {
-    }
-
     [HttpGet("content-model")]
-    [ProducesResponseType(typeof(ChangeDocumentTypeModel), StatusCodes.Status200OK)]
-    public IActionResult Get(Guid unique)
+    [ProducesResponseType(typeof(ChangeEntityTypeModel), StatusCodes.Status200OK)]
+    public IActionResult Get(Guid unique, [FromQuery] string entityType)
     {
-        ChangeDocumentTypeModel? contentType = FlipService.GetContentModel(unique);
-
+        ChangeEntityTypeModel? contentType = FlipServiceFactory.Create(entityType).GetContentModel(unique);
         return Ok(contentType);
     }
 }

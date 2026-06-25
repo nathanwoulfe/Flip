@@ -1,28 +1,26 @@
 using Flip.Models;
 using Flip.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flip.Api.Controllers;
 
-public class ChangeContentTypeController : FlipControllerBase
+public class ChangeContentTypeController(IFlipServiceFactory flipServiceFactory) : FlipControllerBase(flipServiceFactory)
 {
-    public ChangeContentTypeController(IFlipService flipService) : base(flipService)
-    {
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
     [HttpPost("change-type")]
-    public IActionResult ChangeContentType(ChangeDocumentTypeModel model)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public IActionResult ChangeContentType(ChangeEntityTypeModel model, [FromQuery] string entityType)
     {
-        if (!FlipService.TryChangeContentType(model, out string? message))
+        if (!FlipServiceFactory.Create(entityType).TryChangeContentType(model, out string? message))
         {
-            return BadRequest(message);
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid request",
+                Detail = message,
+            });
         }
 
-        return Ok(new { });
+        return Ok();
     }
 }

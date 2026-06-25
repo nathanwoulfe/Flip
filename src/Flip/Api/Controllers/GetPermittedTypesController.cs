@@ -5,18 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Flip.Api.Controllers;
 
-public class GetPermittedTypesController : FlipControllerBase
+public class GetPermittedTypesController(IFlipServiceFactory flipServiceFactory) : FlipControllerBase(flipServiceFactory)
 {
-    public GetPermittedTypesController(IFlipService flipService) : base(flipService)
-    {
-    }
-
     [HttpGet("permitted")]
     [ProducesResponseType(typeof(IEnumerable<ContentTypeModel>), StatusCodes.Status200OK)]
-    public IActionResult Get(Guid unique)
+    public async Task<IActionResult> Get(Guid unique, [FromQuery] string entityType)
     {
-        IEnumerable<ContentTypeModel> permittedTypes = FlipService.GetPermittedTypes(unique);
-
+        IEnumerable<ContentTypeModel> permittedTypes = await FlipServiceFactory.Create(entityType).GetPermittedTypes(unique);
         return Ok(permittedTypes);
     }
 }
