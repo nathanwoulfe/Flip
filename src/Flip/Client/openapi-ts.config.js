@@ -10,7 +10,6 @@ export default defineConfig({
   plugins: [
     {
       name: "@hey-api/client-fetch",
-      bundle: false,
       exportFromIndex: true,
       throwOnError: true,
     },
@@ -20,9 +19,10 @@ export default defineConfig({
     },
     {
       name: "@hey-api/sdk",
-      asClass: true,
-      classNameBuilder: (name) => `${name}Service`,
-      responseStyle: "fields",
-    },
+      operations: {
+        containerName: (name) => `${name}Service`,
+        strategy: "byTags",
+      },
+    }
   ],
 });
