@@ -1,22 +1,25 @@
 using Flip.Models;
 using Flip.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flip.Api.Controllers;
 
-public class GetPermittedTypesController : FlipControllerBase
+public class GetPermittedTypesController(IFlipService flipService, IAuthorizationService authorizationService)
+    : FlipControllerBase(flipService, authorizationService)
 {
-    public GetPermittedTypesController(IFlipService flipService) : base(flipService)
-    {
-    }
-
     [HttpGet("permitted")]
     [ProducesResponseType(typeof(IEnumerable<ContentTypeModel>), StatusCodes.Status200OK)]
-    public IActionResult Get(Guid unique)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> Get(Guid unique)
     {
-        IEnumerable<ContentTypeModel> permittedTypes = FlipService.GetPermittedTypes(unique);
+        if (await IsAuthorized(unique) is false)
+        {
+            return Unauthorized();
+        }
 
+        IEnumerable<ContentTypeModel> permittedTypes = FlipService.GetPermittedTypes(unique);
         return Ok(permittedTypes);
     }
 }

@@ -1,28 +1,34 @@
 using Flip.Models;
 using Flip.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Umbraco.Cms.Core;
 
 namespace Flip.Api.Controllers;
 
-public class ChangeContentTypeController : FlipControllerBase
+public class ChangeContentTypeController(IFlipService flipService, IAuthorizationService authorizationService)
+    : FlipControllerBase(flipService, authorizationService)
 {
-    public ChangeContentTypeController(IFlipService flipService) : base(flipService)
-    {
-    }
-
     /// <summary>
     ///
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     [HttpPost("change-type")]
-    public IActionResult ChangeContentType(ChangeDocumentTypeModel model)
+    [ProducesResponseType(typeof(FlipOperationStatus), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ChangeContentType(ChangeDocumentTypeModel model)
     {
-        if (!FlipService.TryChangeContentType(model, out string? message))
+        if (await IsAuthorized(model.Unique) is false)
         {
-            return BadRequest(message);
+            return Unauthorized();
         }
 
-        return Ok(new { });
+        Attempt<FlipOperationStatus> result = await FlipService.TryChangeContentType(model);
+        return result.Success ? Ok(result.Result) : FlipOperationStatusResult(result.Result);
     }
 }
