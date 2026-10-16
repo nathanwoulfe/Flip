@@ -43,7 +43,7 @@ The OpenAPI schema is served from `/umbraco/openapi/flip-management.json`.
 
 ## Testing
 
-No automated test projects exist. Test changes manually against the example site.
+Unit tests for `FlipDocumentService` and `FlipElementService` live in `tests/Flip.Tests.UnitTests` (xUnit + Moq). Run them with `dotnet test tests/Flip.Tests.UnitTests`. Test UI changes manually against the example site.
 
 ## Architecture
 

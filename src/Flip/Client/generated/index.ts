@@ -2,4 +2,4 @@
 
 export { client, type CreateClientConfig } from './client.gen';
 export { FlipService, type Options } from './sdk.gen';
-export type { ChangeEntityTypeModel, ClientOptions, ContentTypeModel, EntityTypePropertyModel, GetContentModelData, GetContentModelErrors, GetContentModelResponse, GetContentModelResponses, GetPermittedData, GetPermittedErrors, GetPermittedResponse, GetPermittedResponses, PostChangeTypeData, PostChangeTypeError, PostChangeTypeErrors, PostChangeTypeResponses, ProblemDetails, PropertyTypeModel, TemplateModel } from './types.gen';
+export type { ChangeEntityTypeModel, ClientOptions, ContentTypeModel, EntityTypePropertyModel, FlipOperationStatus, GetContentModelData, GetContentModelErrors, GetContentModelResponse, GetContentModelResponses, GetPermittedData, GetPermittedErrors, GetPermittedResponse, GetPermittedResponses, PostChangeTypeData, PostChangeTypeError, PostChangeTypeErrors, PostChangeTypeResponse, PostChangeTypeResponses, ProblemDetails, PropertyTypeModel, TemplateModel } from './types.gen';

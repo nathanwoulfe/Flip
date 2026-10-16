@@ -13,7 +13,7 @@ export default {
     allowChangeElementType: "Allow access to change element type",
     confirmChangeEntityType: "Confirm Change Type",
     confirmChangeEntityTypeDetail:
-      "Are you sure you want to change the entity type? This action may result in data loss depending on the selected mapping. After confirming, the backoffice will reload.",
+      "Are you sure you want to change the entity type? This action may result in data loss depending on the selected mapping.",
     currentProperty: "Current property",
     newProperty: "New property",
     mapProperties: "Map properties",

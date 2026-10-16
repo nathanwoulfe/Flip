@@ -27,6 +27,8 @@ export type EntityTypePropertyModel = {
     dataTypeUnique?: null | string;
 };
 
+export type FlipOperationStatus = number;
+
 export type ProblemDetails = {
     type?: null | string;
     title?: null | string;
@@ -65,6 +67,18 @@ export type PostChangeTypeErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: ProblemDetails;
 };
 
 export type PostChangeTypeError = PostChangeTypeErrors[keyof PostChangeTypeErrors];
@@ -73,8 +87,10 @@ export type PostChangeTypeResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: FlipOperationStatus;
 };
+
+export type PostChangeTypeResponse = PostChangeTypeResponses[keyof PostChangeTypeResponses];
 
 export type GetContentModelData = {
     body?: never;
@@ -91,6 +107,10 @@ export type GetContentModelErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
 };
 
 export type GetContentModelResponses = {
@@ -117,6 +137,10 @@ export type GetPermittedErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
 };
 
 export type GetPermittedResponses = {

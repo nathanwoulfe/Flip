@@ -1,15 +1,16 @@
 using Flip.Models;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 
 namespace Flip.Services;
 
 public interface IFlipService
 {
-    bool TryChangeContentType(ChangeEntityTypeModel model, out string? message);
+    public Task<Attempt<FlipOperationStatus>> TryChangeContentType(ChangeEntityTypeModel model);
 
-    Task<IEnumerable<ContentTypeModel>> GetPermittedTypes(Guid unique);
+    public Task<IEnumerable<ContentTypeModel>> GetPermittedTypes(Guid unique);
 
-    ChangeEntityTypeModel? GetContentModel(Guid unique);
+    public ChangeEntityTypeModel? GetContentModel(Guid unique);
 }
 
 public interface IFlipService<TEntity> : IFlipService
@@ -17,5 +18,5 @@ public interface IFlipService<TEntity> : IFlipService
 
 public interface IFlipServiceFactory
 {
-    IFlipService Create(string entityType);
+    public IFlipService Create(string entityType);
 }
