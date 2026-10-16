@@ -1,5 +1,8 @@
 using System.Reflection;
 using Flip.Models;
+using Flip.Notifications;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
@@ -12,36 +15,56 @@ internal sealed class FlipService : IFlipService
     private readonly IContentTypeService _contentTypeService;
     private readonly IContentService _contentService;
     private readonly IBackOfficeSecurityAccessor _backOfficeSecurityAccessor;
+    private readonly IEventAggregator _eventAggregator;
+    private readonly IEventMessagesFactory _eventMessagesFactory;
+    private readonly IAuditService _auditService;
 
     public FlipService(
         IContentTypeService contentTypeService,
         IContentService contentService,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor)
+        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+        IEventAggregator eventAggregator,
+        IEventMessagesFactory eventMessagesFactory,
+        IAuditService auditService)
     {
         _contentTypeService = contentTypeService;
         _contentService = contentService;
         _backOfficeSecurityAccessor = backOfficeSecurityAccessor;
+        _eventAggregator = eventAggregator;
+        _eventMessagesFactory = eventMessagesFactory;
+        _auditService = auditService;
     }
 
     /// <inheritdoc/>
-    public bool TryChangeContentType(ChangeDocumentTypeModel model, out string? message)
+    public async Task<Attempt<FlipOperationStatus>> TryChangeContentType(ChangeDocumentTypeModel model)
     {
-        message = null;
-        IContent? node = _contentService.GetById(model.Unique);
-
-        if (node is null)
+        if (_backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Key is not Guid userKey
+            || _backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id is not int userId)
         {
-            message = "Could not find source content";
-            return false;
+            return Attempt.Fail(FlipOperationStatus.UserNotFound);
+        }
+
+        if (_contentService.GetById(model.Unique) is not IContent node)
+        {
+            return Attempt.Fail(FlipOperationStatus.ContentNotFound);
+        }
+
+        EventMessages? evtMsgs = _eventMessagesFactory.Get();
+        ContentTypeChangingNotification changingNotification = new(node, evtMsgs);
+        if (_eventAggregator.PublishCancelable(changingNotification))
+        {
+            return Attempt.Fail(FlipOperationStatus.CancelledByNotification);
         }
 
         if (node.ContentType.Key == model.ContentTypeKey)
         {
-            message = "Current type and target type are the same";
-            return false;
+            return Attempt.Fail(FlipOperationStatus.CurrentAndNewTypesMatch);
         }
 
-        IContentType? newType = _contentTypeService.GetAll().FirstOrDefault(x => x.Key == model.ContentTypeKey);
+        if (_contentTypeService.GetAll().FirstOrDefault(x => x.Key == model.ContentTypeKey) is not IContentType newType)
+        {
+            return Attempt.Fail(FlipOperationStatus.ContentTypeNotFound);
+        }
 
         Dictionary<string, string>? cultureNames = [];
 
@@ -51,12 +74,6 @@ internal sealed class FlipService : IFlipService
             {
                 cultureNames.Add(culture, node.GetCultureName(culture) ?? node.Name!);
             }
-        }
-
-        if (newType is null)
-        {
-            message = "Could not find target content type";
-            return false;
         }
 
         var properties = node.Properties
@@ -87,14 +104,13 @@ internal sealed class FlipService : IFlipService
         foreach (IProperty prop in node.Properties)
         {
             // finds the new property to map to
-            DocumentTypePropertyModel? newProp = model.Properties?.FirstOrDefault(p => p.NewAlias == prop.Alias);
-            if (newProp is null)
+            if (model.Properties?.FirstOrDefault(p => p.NewAlias == prop.Alias) is not DocumentTypePropertyModel newProp)
             {
                 continue;
             }
 
-            // and the original value before we switch the type
-            DocumentTypePropertyModel? oldProp = properties[prop.Alias];
+            // and the original value before we switch the type, keyed by the source property alias
+            properties.TryGetValue(newProp.Alias ?? string.Empty, out DocumentTypePropertyModel? oldProp);
             newProp.Values = oldProp?.Values;
             newProp.Value = oldProp?.Value;
 
@@ -131,16 +147,20 @@ internal sealed class FlipService : IFlipService
             }
         }
 
-        _ = _contentService.Save(node, _backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
+        _ = _contentService.Save(node, userId);
 
-        return true;
+        ContentTypeChangedNotification changedNotification = new(node, evtMsgs);
+        _eventAggregator.Publish(changedNotification);
+
+        await _auditService.AddAsync(AuditType.Custom, userKey, node.Id, null, $"Changed document type to {newType.Name}");
+
+        return Attempt.Succeed(FlipOperationStatus.Success);
     }
 
     /// <inheritdoc />
     public ChangeDocumentTypeModel? GetContentModel(Guid unique)
     {
-        IContent? content = _contentService.GetById(unique);
-        if (content is null)
+        if (_contentService.GetById(unique) is not IContent content)
         {
             return null;
         }
@@ -162,9 +182,7 @@ internal sealed class FlipService : IFlipService
     /// <inheritdoc />
     public IEnumerable<ContentTypeModel> GetPermittedTypes(Guid unique)
     {
-        IContent? content = _contentService.GetById(unique);
-
-        if (content is null)
+        if (_contentService.GetById(unique) is not IContent content)
         {
             return [];
         }
@@ -224,16 +242,12 @@ internal sealed class FlipService : IFlipService
         }
 
         // Below root, so only include those allowed as sub-nodes for the parent
-        IContent? parentNode = _contentService.GetById(parentId);
-
-        if (parentNode is null)
+        if (_contentService.GetById(parentId) is not IContent parentNode)
         {
             return [];
         }
 
-        IContentType? parentType = _contentTypeService.Get(parentNode.ContentTypeId);
-
-        if (parentType is null)
+        if (_contentTypeService.Get(parentNode.ContentTypeId) is not IContentType parentType)
         {
             return [];
         }
