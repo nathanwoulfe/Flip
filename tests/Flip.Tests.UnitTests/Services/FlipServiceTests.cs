@@ -213,7 +213,7 @@ public class FlipServiceTests
         _contentService.Verify(x => x.Save(content, UserId, null), Times.Once);
         _eventAggregator.Verify(x => x.PublishCancelable(It.Is<ContentTypeChangingNotification>(n => n.Content == content)), Times.Once);
         _eventAggregator.Verify(x => x.Publish(It.Is<ContentTypeChangedNotification>(n => n.Content == content)), Times.Once);
-        _auditService.Verify(x => x.AddAsync(AuditType.Custom, UserKey, content.Id, null, "Changed document type to contact", null), Times.Once);
+        _auditService.Verify(x => x.AddAsync(AuditType.Custom, UserKey, content.Id, "Document", "Changed document type to contact", "Changed document type to contact"), Times.Once);
     }
 
     [Fact]

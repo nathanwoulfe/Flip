@@ -66,6 +66,8 @@ internal sealed class FlipService : IFlipService
             return Attempt.Fail(FlipOperationStatus.ContentTypeNotFound);
         }
 
+        string? oldTypeName = node.ContentType.Name;
+
         Dictionary<string, string>? cultureNames = [];
 
         if (node.ContentType.VariesByCulture())
@@ -152,7 +154,16 @@ internal sealed class FlipService : IFlipService
         ContentTypeChangedNotification changedNotification = new(node, evtMsgs);
         _eventAggregator.Publish(changedNotification);
 
-        await _auditService.AddAsync(AuditType.Custom, userKey, node.Id, null, $"Changed document type to {newType.Name}");
+        // the backoffice history renders Custom entries as '%0%' with the parameters value, not the comment,
+        // so the message is written to both: comment for the DB record, parameters for the UI
+        string auditMessage = $"Changed document type{(string.IsNullOrEmpty(oldTypeName) is false ? $" from {oldTypeName}" : string.Empty)} to {newType.Name}";
+        _ = await _auditService.AddAsync(
+            AuditType.Custom,
+            userKey,
+            node.Id,
+            UmbracoObjectTypes.Document.GetName(),
+            auditMessage,
+            auditMessage);
 
         return Attempt.Succeed(FlipOperationStatus.Success);
     }
