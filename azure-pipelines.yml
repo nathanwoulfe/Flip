@@ -21,6 +21,7 @@ parameters:
 variables:
   nodeVersion: 22.x
   solution: Flip.sln
+  testProject: tests/Flip.Tests.UnitTests/Flip.Tests.UnitTests.csproj
   buildConfiguration: Release
   DOTNET_NOLOGO: true
   DOTNET_GENERATE_ASPNET_CERTIFICATE: false
@@ -99,3 +100,43 @@ stages:
             inputs:
               artifactName: nupkg
               targetPath: $(Build.ArtifactStagingDirectory)/nupkg
+
+  - stage: UnitTests
+    displayName: Unit Tests
+    dependsOn: Build
+    jobs:
+      - job: UnitTests
+        displayName: Run Unit Tests
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          # Checkout source (avoid shallow clone to calculate version height)
+          - checkout: self
+            fetchDepth: 0
+
+          # Setup test environment
+          - task: NuGetAuthenticate@1
+            displayName: Authenticate NuGet
+
+          - task: UseDotNet@2
+            displayName: Use .NET SDK from global.json
+            inputs:
+              useGlobalJson: true
+
+          - script: dotnet restore $(testProject) --locked-mode
+            displayName: Restore NuGet packages
+
+          # Test
+          - script: dotnet test $(testProject) --configuration $(buildConfiguration) --no-restore --logger trx --results-directory $(Agent.TempDirectory)/tests
+            displayName: Run dotnet test
+
+          # Publish
+          - task: PublishTestResults@2
+            displayName: Publish test results
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '*.trx'
+              searchFolder: $(Agent.TempDirectory)/tests
+              testRunTitle: Unit Tests - $(Agent.OS)
+              configuration: $(buildConfiguration)

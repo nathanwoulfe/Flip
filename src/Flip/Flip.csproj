@@ -24,6 +24,10 @@
     <PackageReference Include="Umbraco.Cms.Api.Management" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Flip.Tests.UnitTests" />
+  </ItemGroup>
+
   <!-- Update umbraco-package.json files with current build version -->
   <!-- Assumes that the client assets have already been built to wwwroot -->
   <Target Name="UpdatePackageManifestVersion" BeforeTargets="BeforeBuild" DependsOnTargets="GetBuildVersion;GetUmbracoBuildVersion" Condition="Exists('wwwroot\umbraco-package.json')">
