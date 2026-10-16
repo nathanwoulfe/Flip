@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms" VersionOverride="17.0.0" />
-    <PackageReference Include="Umbraco.TheStarterKit" VersionOverride="17.0.0-rc4" />
+    <PackageReference Include="Umbraco.TheStarterKit" VersionOverride="17.0.0" />
   </ItemGroup>
 
   <ItemGroup>
