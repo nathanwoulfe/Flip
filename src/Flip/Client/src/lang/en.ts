@@ -10,7 +10,7 @@ export default {
     allowChangeDocumentType: "Allow access to change document type",
     confirmChangeDocumentType: "Confirm Change Document Type",
     confirmChangeDocumentTypeDetail:
-      "Are you sure you want to change the document type? This action may result in data loss depending on the selected mapping. After confirming, the backoffice will reload.",
+      "Are you sure you want to change the document type? This action may result in data loss depending on the selected mapping.",
     selectDocumentType: "Select a document type",
     currentProperty: "Current property",
     newProperty: "New property",
