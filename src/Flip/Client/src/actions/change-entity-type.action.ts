@@ -1,4 +1,9 @@
-import { UmbEntityActionBase } from "@umbraco-cms/backoffice/entity-action";
+import {
+  UmbEntityActionBase,
+  UmbEntityUpdatedEvent,
+  UmbRequestReloadStructureForEntityEvent,
+} from "@umbraco-cms/backoffice/entity-action";
+import { UMB_ACTION_EVENT_CONTEXT } from "@umbraco-cms/backoffice/action";
 import { umbConfirmModal, umbOpenModal } from "@umbraco-cms/backoffice/modal";
 import { CHANGE_ENTITY_TYPE_MODAL_ALIAS } from "../modal/constants.js";
 import type {
@@ -55,7 +60,21 @@ export class FlipChangeEntityTypeEntityAction extends UmbEntityActionBase<never>
 
     if (error) return;
 
-    location.reload();
+    await this.#dispatchReloadEvents(this.args.unique, this.args.entityType);
+  }
+
+  async #dispatchReloadEvents(unique: string, entityType: string) {
+    const actionEventContext = await this.getContext(UMB_ACTION_EVENT_CONTEXT);
+
+    // reloads the tree item, so it shows the new type's icon
+    actionEventContext?.dispatchEvent(
+      new UmbRequestReloadStructureForEntityEvent({ unique, entityType })
+    );
+
+    // reloads an open document or element workspace, so it renders the new type's properties
+    actionEventContext?.dispatchEvent(
+      new UmbEntityUpdatedEvent({ unique, entityType })
+    );
   }
 }
 

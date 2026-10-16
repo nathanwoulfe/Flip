@@ -1,7 +1,9 @@
 using System.Reflection;
 using Flip.Models;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
@@ -11,35 +13,52 @@ namespace Flip.Services;
 internal abstract class FlipService<TEntity>(
     IIdKeyMap idKeyMap,
     IContentTypeService contentTypeService,
-    IBackOfficeSecurityAccessor backOfficeSecurityAccessor) : IFlipService<TEntity>
+    IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+    IEventAggregator eventAggregator,
+    IEventMessagesFactory eventMessagesFactory,
+    IAuditService auditService) : IFlipService<TEntity>
     where TEntity : class, IPublishableContentBase
 {
     protected abstract IPublishableContentService<TEntity> EntityService { get; }
 
     protected abstract UmbracoObjectTypes EntityObjectType { get; }
 
+    protected abstract CancelableObjectNotification<TEntity> CreateChangingNotification(TEntity entity, EventMessages messages);
+
+    protected abstract ObjectNotification<TEntity> CreateChangedNotification(TEntity entity, EventMessages messages);
+
     /// <inheritdoc/>
-    public bool TryChangeContentType(ChangeEntityTypeModel model, out string? message)
+    public async Task<Attempt<FlipOperationStatus>> TryChangeContentType(ChangeEntityTypeModel model)
     {
-        message = null;
+        if (backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Key is not Guid userKey
+            || backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id is not int userId)
+        {
+            return Attempt.Fail(FlipOperationStatus.UserNotFound);
+        }
 
         if (EntityService.GetById(model.Unique) is not TEntity node)
         {
-            message = "Could not find source content";
-            return false;
+            return Attempt.Fail(FlipOperationStatus.ContentNotFound);
+        }
+
+        EventMessages? evtMsgs = eventMessagesFactory.Get();
+        CancelableObjectNotification<TEntity> changingNotification = CreateChangingNotification(node, evtMsgs);
+        if (eventAggregator.PublishCancelable(changingNotification))
+        {
+            return Attempt.Fail(FlipOperationStatus.CancelledByNotification);
         }
 
         if (node.ContentType.Key == model.ContentTypeKey)
         {
-            message = "Current type and target type are the same";
-            return false;
+            return Attempt.Fail(FlipOperationStatus.CurrentAndNewTypesMatch);
         }
 
         if (contentTypeService.GetAll().FirstOrDefault(x => x.Key == model.ContentTypeKey) is not IContentType newType)
         {
-            message = "Could not find target content type";
-            return false;
+            return Attempt.Fail(FlipOperationStatus.ContentTypeNotFound);
         }
+
+        string? oldTypeName = node.ContentType.Name;
 
         Dictionary<string, string>? cultureNames = [];
 
@@ -87,8 +106,8 @@ internal abstract class FlipService<TEntity>(
                 continue;
             }
 
-            // and the original value before we switch the type
-            EntityTypePropertyModel? oldProp = properties[prop.Alias];
+            // and the original value before we switch the type, keyed by the source property alias
+            properties.TryGetValue(newProp.Alias ?? string.Empty, out EntityTypePropertyModel? oldProp);
             newProp.Values = oldProp?.Values;
             newProp.Value = oldProp?.Value;
 
@@ -125,9 +144,24 @@ internal abstract class FlipService<TEntity>(
             }
         }
 
-        _ = EntityService.Save(node, backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Id);
+        _ = EntityService.Save(node, userId);
 
-        return true;
+        ObjectNotification<TEntity> changedNotification = CreateChangedNotification(node, evtMsgs);
+        eventAggregator.Publish(changedNotification);
+
+        // the backoffice history renders Custom entries as '%0%' with the parameters value, not the comment,
+        // so the message is written to both: comment for the DB record, parameters for the UI
+        string? entityTypeName = EntityObjectType.GetName();
+        string auditMessage = $"Changed {entityTypeName?.ToLowerInvariant()} type{(string.IsNullOrEmpty(oldTypeName) is false ? $" from {oldTypeName}" : string.Empty)} to {newType.Name}";
+        _ = await auditService.AddAsync(
+            AuditType.Custom,
+            userKey,
+            node.Id,
+            entityTypeName,
+            auditMessage,
+            auditMessage);
+
+        return Attempt.Succeed(FlipOperationStatus.Success);
     }
 
     /// <inheritdoc />
