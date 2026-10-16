@@ -29,10 +29,21 @@ export type DocumentTypePropertyModel = {
 
 export type EventMessageTypeModel = 'Default' | 'Info' | 'Error' | 'Success' | 'Warning';
 
+export type FlipOperationStatus = 'Unknown' | 'Success' | 'UserNotFound' | 'ContentNotFound' | 'ContentTypeNotFound' | 'CancelledByNotification' | 'CurrentAndNewTypesMatch';
+
 export type NotificationHeaderModel = {
     message: string;
     category: string;
     type: EventMessageTypeModel;
+};
+
+export type ProblemDetails = {
+    type?: string | null;
+    title?: string | null;
+    status?: number | null;
+    detail?: string | null;
+    instance?: string | null;
+    [key: string]: unknown;
 };
 
 export type PropertyTypeModel = {
@@ -56,17 +67,37 @@ export type PostChangeTypeData = {
 
 export type PostChangeTypeErrors = {
     /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: ProblemDetails;
 };
+
+export type PostChangeTypeError = PostChangeTypeErrors[keyof PostChangeTypeErrors];
 
 export type PostChangeTypeResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: FlipOperationStatus;
 };
+
+export type PostChangeTypeResponse = PostChangeTypeResponses[keyof PostChangeTypeResponses];
 
 export type GetContentModelData = {
     body?: never;
@@ -82,7 +113,13 @@ export type GetContentModelErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
 };
+
+export type GetContentModelError = GetContentModelErrors[keyof GetContentModelErrors];
 
 export type GetContentModelResponses = {
     /**
@@ -107,7 +144,13 @@ export type GetPermittedErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
 };
+
+export type GetPermittedError = GetPermittedErrors[keyof GetPermittedErrors];
 
 export type GetPermittedResponses = {
     /**
