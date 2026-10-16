@@ -17,6 +17,14 @@ parameters:
     displayName: Cache NuGet packages
     type: boolean
     default: false
+  - name: release
+    displayName: Release
+    type: string
+    default: auto
+    values:
+      - auto # Only release to NuGet on public releases, otherwise skip
+      - public # Release to NuGet, regardless of release type
+      - skip # Skip releasing to NuGet, regardless of release type
 
 variables:
   nodeVersion: 22.x
@@ -91,6 +99,7 @@ stages:
 
           - script: dotnet build $(solution) --configuration $(buildConfiguration) --no-restore -p:ContinuousIntegrationBuild=true
             displayName: Run dotnet build
+            name: build
 
           - script: dotnet pack $(solution) --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/nupkg
             displayName: Run dotnet pack
@@ -140,3 +149,55 @@ stages:
               searchFolder: $(Agent.TempDirectory)/tests
               testRunTitle: Unit Tests - $(Agent.OS)
               configuration: $(buildConfiguration)
+
+  # Azure validates the service connections referenced by step inputs at queue time, even for
+  # stages a runtime condition would skip, so an explicit 'skip' is gated at compile time.
+  # 'auto' can't be: it depends on NBGV_PublicRelease, which is only known at run time.
+  - ${{ if ne(parameters.release, 'skip') }}:
+    - stage: Release
+      displayName: Release to NuGet
+      dependsOn:
+        - Build
+        - UnitTests
+      # Runs when Build and UnitTests succeeded, and either release was explicitly overridden
+      # (public) or this is a public release
+      condition: |
+        and(
+          succeeded(),
+          or(
+            ne('${{ parameters.release }}', 'auto'),
+            eq(dependencies.Build.outputs['Build.build.NBGV_PublicRelease'], true)
+          )
+        )
+      jobs:
+        - job: WaitForApproval
+          displayName: Wait for manual approval
+          pool: server
+          timeoutInMinutes: 4320 # 3 days
+          steps:
+            - task: ManualValidation@0
+              displayName: Manual approval to publish the release
+              inputs:
+                notifyUsers: ''
+                instructions: 'Approve to publish $(Build.BuildNumber) to NuGet.'
+                onTimeout: 'reject'
+
+        - job: NuGet
+          displayName: Publish to NuGet
+          dependsOn: WaitForApproval
+          pool:
+            vmImage: windows-latest # NuGetCommand@2 requires Mono and is no longer supported on Ubuntu 24.04+
+          steps:
+            - checkout: none
+
+            - download: current
+              artifact: nupkg
+              displayName: Download nupkg artifact
+
+            - task: NuGetCommand@2
+              displayName: Publish to NuGet
+              inputs:
+                command: push
+                packagesToPush: $(Pipeline.Workspace)/nupkg/*.nupkg
+                nuGetFeedType: external
+                publishFeedCredentials: NuGet.org
